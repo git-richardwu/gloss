@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: 
+      context: ./backend
+    ports:
+    - "3000:3000"
+    environment:
+      - FRONTEND_URL=http://localhost:9000
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run dev
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend

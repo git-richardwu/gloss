@@ -1,0 +1,40 @@
+.parent {
+    margin: 10px;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+
+}
+
+.list_style {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    list-style-type: none;
+}
+
+.search_result_item {
+    display: flex;
+    align-items: center;
+    border: 1px solid black;
+    margin: 12px 0 12px;
+    background-color: #EADFCD;
+    width: auto;
+}
+
+.image {
+    float: left;
+    height: auto;
+    width: 140px;
+    margin: 12px;
+}
+
+.details {
+    margin-right: 12px;
+}
+
+.title {
+    margin: 10px 0 5px 0;
+}
