@@ -16,7 +16,7 @@ class BookDBService {
             const searchRes = await this.openLibraryService.searchBooks(query, limit)
             if (searchRes.length === 0) {
                 return {
-                    success: false,
+                    success: true,
                     books: [],
                     summary: {},
                     receipt: {},
@@ -43,7 +43,7 @@ class BookDBService {
             books: localResults,
             summary: {},
             receipt: {},
-            message: `No books found for "${query}"`
+            message: `"${query}" found in database`
 
         }
     }

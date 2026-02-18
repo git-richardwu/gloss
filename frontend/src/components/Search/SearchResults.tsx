@@ -13,7 +13,7 @@ const SearchResults = ({ books }: SearchResultsProps) => {
                 <div className={styles.center}>
                     <ul className={styles.list_style}>
                         {books.map((book) => (
-                            // <Link to={`/book/${book.work_id}`}>
+                            <Link className={styles.textDecoration} to={`/book/${book.work_id}`}>
                             <li key={book.work_id} className={styles.search_result_item}>
                                 <img className={styles.image} src={`${book.cover_url}` + 'M.jpg'} />
                                 <div className={styles.details}>
@@ -21,7 +21,7 @@ const SearchResults = ({ books }: SearchResultsProps) => {
                                     <p className={styles.author}>{book.author}</p>
                                 </div>
                             </li>
-                            // </Link>
+                            </Link>
                         ))}
                     </ul>
                 </div>

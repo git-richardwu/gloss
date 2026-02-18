@@ -22,6 +22,7 @@
     margin: 12px 0 12px;
     background-color: #EADFCD;
     width: auto;
+    
 }
 
 .image {
@@ -37,4 +38,10 @@
 
 .title {
     margin: 10px 0 5px 0;
+}
+
+.textDecoration {
+    text-decoration: none;
+    user-select: none;
+    color: #242424;
 }

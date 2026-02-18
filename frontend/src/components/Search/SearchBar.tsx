@@ -4,11 +4,13 @@ import type { Book } from '../../types';
 import SearchResults from "./SearchResults";
 
 const SearchBar = () => {
-    const [query, setQuery] = useState('');
+    const [query, setQuery] = useState<string>('');
     const [limit, setLimit] = useState<number>(1)
     const [results, setResults] = useState<Book[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+    
+    
 
     const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -17,7 +19,7 @@ const SearchBar = () => {
             return;
         }
         setLoading(true);
-        setError('');
+        setError(null);
         try {
             console.log(query)
             const response = await bookAPI.searchAndSaveBooks(query, limit);
