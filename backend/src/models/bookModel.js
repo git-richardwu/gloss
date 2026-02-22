@@ -20,7 +20,7 @@ class BookModel {
         await this.db.query('CREATE EXTENSION IF NOT EXISTS pg_trgm')
         const query = `SELECT similarity(title, $1) as similarity_score, *
         FROM books
-        WHERE similarity(title, $1) > 0.09
+        WHERE similarity(title, $1) > 0.3
         ORDER BY similarity_score DESC
         LIMIT $2`
         const res = await this.db.query(query, [name, limit])
