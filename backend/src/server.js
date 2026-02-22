@@ -16,6 +16,7 @@ const openLibraryService = new OpenLibraryService();
 const bookService = new BookService(bookModel, openLibraryService);
 const glossaryService = new GlossaryService(glossaryModel)
 const bookController = new BookController(bookService, glossaryService)
+const glossaryController = new GlossaryController(glossaryService)
 
 const express = require('express');
 const cors = require('cors');

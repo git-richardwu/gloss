@@ -6,8 +6,8 @@ export interface Book {
 }
 
 export interface BookReponse {
-    success: boolean,
-    books: Book[]
+    success: boolean;
+    books: Book[];
 }
 
 export interface BookDetails {
@@ -18,3 +18,26 @@ export interface BookDetails {
     cover_url: string;
     year_published: number;
 }
+
+export interface BookPageResponse {
+    success: boolean;
+    details: BookDetails;
+    glossary: GlossaryData;
+}
+
+export interface GlossaryData {
+    chapters: ChapterData[];
+}
+
+export interface ChapterData {
+    chapter: string;
+    characters: Character[];
+}
+
+export interface Character {
+    name: string;
+    description: string;
+    central_character: boolean;
+}
+
+

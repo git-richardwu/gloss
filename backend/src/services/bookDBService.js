@@ -126,7 +126,7 @@ class BookDBService {
         }
     }
 
-    async loadOpenLibraryDescriptionAndSave(work_id) {
+    async getOrFetchDescription(work_id) {
         if (!work_id) {
             throw new ValidationError('No work_id provided.')
         }
@@ -151,7 +151,7 @@ class BookDBService {
         return {
             success: true,
             book: searchDB,
-            message: `${work_id} found in database`
+            message: `${work_id}'s description found in database`
 
         }
     }

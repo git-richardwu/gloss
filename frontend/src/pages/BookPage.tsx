@@ -1,14 +1,18 @@
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { bookAPI } from "../services/bookAPI"
-import type { BookDetails } from '../types'
+import type { BookDetails, GlossaryData } from '../types'
 import styles from './BookPage.module.css'
+import GlossarySection from "../components/Glossary/GlossarySection";
+
 
 const BookPage = () => {
     const [loading, setLoading] = useState<boolean>(true)
     const [book, setBook] = useState<BookDetails | null>(null)
+    const [glossary, setGlossary] = useState<GlossaryData | null>(null)
     const { work_id } = useParams<{ work_id: string }>();
     const [error, setError] = useState<string | null>(null);
+    const [updateTime, setUpdateTime] = useState<string | null>(null);
 
 
     useEffect(() => {
@@ -19,9 +23,11 @@ const BookPage = () => {
         }
         const fetchBookDetails = async (): Promise<void> => {
             try {
-                const response = await bookAPI.getBookDescriptionAndLoad(work_id);
+                const response = await bookAPI.fetchBookPageAndLoadIfNeeded(work_id);
                 if (response.success) {
                     setBook(response.details)
+                    setGlossary(response.glossary.glossary_content)
+                    setUpdateTime(response.glossary.updated_at)
                 } else {
                     setError('Failed to get book detail')
                 }
@@ -62,6 +68,8 @@ const BookPage = () => {
             </div>
             <div className={styles.right}>
                 <h1>Community Glossary</h1>
+                <p>{updateTime}</p>
+                <GlossarySection glossary={glossary} work_id={work_id!} />
             </div>
         </div>
     )

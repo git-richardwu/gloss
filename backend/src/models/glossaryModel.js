@@ -38,25 +38,54 @@ class GlossaryModel {
     //     return res.rows[0]
     // }
     async addCommunityGlossary(work_id) {
+        if (!this.db) {
+            throw new DatabaseConnectionError();
+        }
         const query = `INSERT INTO community_glossaries (work_id, glossary_content)
         VALUES ($1, $2::jsonb)
         RETURNING *`
-        const values = [work_id, '{}'];
+        const values = [work_id, {
+            "chapters": [
+                {
+                    "chapter": "Chapter 1",
+                    "characters": [
+                        {
+                            "name": "Character A",
+                            "description": "Main character",
+                            "central_character": true
+                        },
+                        {
+                            "name": "Character B",
+                            "description": "Side character",
+                            "central_character": true
+                        }
+                    ]
+                }
+            ]
+        }];
         const result = await this.db.query(query, values);
         return result.rows[0];
     }
     async fetchCommunityGlossaryByID(work_id) {
+        if (!this.db) {
+            throw new DatabaseConnectionError();
+        }
         const query = `SELECT * FROM community_glossaries WHERE work_id = $1`
         const res = await this.db.query(query, [work_id])
         return res.rows[0]
     }
     async updateCommunityGlossary(json, work_id) {
+        if (!this.db) {
+            throw new DatabaseConnectionError();
+        }
         const query = `UPDATE community_glossaries
         SET glossary_content = $1
-        WHERE work_id = $2`
+        WHERE work_id = $2
+        RETURNING *`
         const result = await this.db.query(query, [json, work_id]);
-        return result.rowCount;
+        return result.rows[0];
     }
 }
 
 module.exports = GlossaryModel;
+

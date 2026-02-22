@@ -30,3 +30,9 @@ export class DatabaseConnectionError extends AppError {
         super(message, 502, details)
     }
 }
+
+export class DuplicateError extends AppError {
+    constructor(message = 'Duplicate entry in database', details = null) {
+        super(message, 409, details)
+    }
+}

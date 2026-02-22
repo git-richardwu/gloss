@@ -1,0 +1,30 @@
+.parent {
+    margin-bottom: 12px;
+}
+
+.chapter {
+    padding: 12px 0;
+    width: 100%;
+    background-color: #242424;
+    color: #ECECEC;
+}
+
+.content {
+    margin: 12px;
+    overflow: auto;
+}
+
+.name {
+    font-size: 24px;
+    background-color: #EADFCD;
+    border: 1px solid #242424;
+    padding: 4px 6px 8px ;
+    margin-right: 6px;
+    float: left;
+}
+
+.description {
+    font-size: 18px;
+    margin: 2px 3px;
+    text-align: left;
+}
