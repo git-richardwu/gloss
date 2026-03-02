@@ -26,11 +26,11 @@ export interface BookPageResponse {
 }
 
 export interface GlossaryData {
-    chapters: ChapterData[];
+    chapters: Chapter[];
 }
 
-export interface ChapterData {
-    chapter: string;
+export interface Chapter {
+    chapter_name: string;
     characters: Character[];
 }
 
