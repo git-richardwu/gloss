@@ -47,7 +47,7 @@ class GlossaryModel {
         const values = [work_id, {
             "chapters": [
                 {
-                    "chapter": "Chapter 1",
+                    "chapter_name": "Chapter 1",
                     "characters": [
                         {
                             "name": "Character A",
