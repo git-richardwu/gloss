@@ -47,6 +47,21 @@ class GlossaryModel {
         const values = [work_id, {
             "chapters": [
                 {
+                    "chapter_name": "Prologue",
+                    "characters": [
+                        {
+                            "name": "Character A",
+                            "description": "Main character",
+                            "central_character": true
+                        },
+                        {
+                            "name": "Character B",
+                            "description": "Side character",
+                            "central_character": true
+                        }
+                    ]
+                },
+                {
                     "chapter_name": "Chapter 1",
                     "characters": [
                         {

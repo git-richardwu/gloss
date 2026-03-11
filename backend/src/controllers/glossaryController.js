@@ -6,7 +6,7 @@ class glossaryController {
     }
     async updateGlossary(req, res) {
         try {
-            const { userInput } = req.query;
+            const { userInput } = req.body;
             const { id } = req.params
             const serviceRes = await this.glossaryService.updateCommunityGlossary(userInput, id)
             res.status(200).json(serviceRes)

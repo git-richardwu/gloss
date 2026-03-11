@@ -10,8 +10,6 @@ const SearchBar = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     
-    
-
     const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!query.trim()) {
@@ -39,7 +37,7 @@ const SearchBar = () => {
 
     return (
         <div>
-            <h1>Book Search</h1>
+            <h1>BOOK SEARCH</h1>
             <form onSubmit={handleSearch}>
                 <input type='text'
                     value={query}

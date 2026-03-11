@@ -21,6 +21,7 @@ const glossaryController = new GlossaryController(glossaryService)
 const express = require('express');
 const cors = require('cors');
 const bookRoutes = require('./routes/bookRoutes');
+const glossaryRoutes = require('./routes/glossaryRoutes')
 
 const app = express();
 const http = require('http');
@@ -36,6 +37,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/books', bookRoutes(bookController));
+app.use('/api/books', glossaryRoutes(glossaryController));
 
 const testing = require('./services/test')
 

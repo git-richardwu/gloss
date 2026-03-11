@@ -3,10 +3,13 @@
 }
 
 .chapter {
-    padding: 12px 0;
-    width: 100%;
+    padding: 13px;
+    width: 90%;
     background-color: #242424;
     color: #ECECEC;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
 }
 
 .content {
@@ -24,7 +27,7 @@
 }
 
 .description {
-    font-size: 18px;
+    font-size: 20px;
     margin: 2px 3px;
     text-align: left;
 }

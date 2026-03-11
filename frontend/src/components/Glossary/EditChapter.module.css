@@ -1,0 +1,53 @@
+.parent {
+    margin-bottom: 12px;
+    border: 5px dashed black;
+    /* border-style: dashed; */
+    padding: 10px;
+}
+
+.chapter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chapterInput {
+    width: 92%;
+    background-color: white;
+    padding: 13px;
+    font-size: 24px;
+    font-family: "Special Elite";
+    cursor: pointer;
+    color: #242424;
+}
+
+.icon {
+    margin: 6px 8px;
+    font-size: 24px;
+}
+
+.content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 20px 0; 
+    overflow: auto;
+}
+
+.name {
+    width: 80%;
+    font-size: 24px;
+    background-color: white;
+    border: 1px solid #242424;
+    padding: 4px 6px 8px ;
+    margin-right: 6px;
+    float: left;
+}
+
+.description {
+    margin: 6px 0;
+    font-size: 20px;
+    padding: 4px 6px 8px ;
+    text-align: left;
+}

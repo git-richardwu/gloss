@@ -25,6 +25,12 @@ export interface BookPageResponse {
     glossary: GlossaryData;
 }
 
+export interface GlossaryUpdateResponse {
+    success: boolean;
+    glossary: GlossaryData;
+    message?: string;
+}
+
 export interface GlossaryData {
     chapters: Chapter[];
 }

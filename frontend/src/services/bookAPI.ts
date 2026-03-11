@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { BookReponse } from '../types';
+import type { BookPageResponse, BookReponse } from '../types';
 
 const API_BASE_URL = 'http://localhost:3000/api';
 
@@ -18,7 +18,7 @@ export const bookAPI = {
         return {
             success: true,
             details: response.data.details,
-            glossary: response.data.glossary
+            glossary: response.data.glossary,
         }
-    }
+    },
 }
