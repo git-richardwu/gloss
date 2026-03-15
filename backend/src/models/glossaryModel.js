@@ -41,10 +41,10 @@ class GlossaryModel {
         if (!this.db) {
             throw new DatabaseConnectionError();
         }
-        const query = `INSERT INTO community_glossaries (work_id, glossary_content)
-        VALUES ($1, $2::jsonb)
+        const query = `INSERT INTO community_glossaries (work_id, version_number, glossary_content)
+        VALUES ($1, $2, $3::jsonb)
         RETURNING *`
-        const values = [work_id, {
+        const values = [work_id, 1, {
             "chapters": [
                 {
                     "chapter_name": "Prologue",
@@ -89,15 +89,15 @@ class GlossaryModel {
         const res = await this.db.query(query, [work_id])
         return res.rows[0]
     }
-    async updateCommunityGlossary(json, work_id) {
+    async updateCommunityGlossary(json, work_id, newVersion) {
         if (!this.db) {
             throw new DatabaseConnectionError();
         }
         const query = `UPDATE community_glossaries
-        SET glossary_content = $1
+        SET glossary_content = $1, version_number = $3
         WHERE work_id = $2
         RETURNING *`
-        const result = await this.db.query(query, [json, work_id]);
+        const result = await this.db.query(query, [json, work_id, newVersion]);
         return result.rows[0];
     }
 }

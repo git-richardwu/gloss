@@ -56,15 +56,16 @@ class glossaryDBService {
             message: `Community glossary for ${work_id} found`
         }
     }
-    async updateCommunityGlossary(json, work_id) {
+    async updateCommunityGlossary(json, work_id, newVersion) {
         if (!work_id) {
             throw new ValidationError('No work_id provided.')
         }
         if (typeof json !== 'object' || !json) {
             throw new ValidationError('No object provided.')
         }
+        console.log(newVersion)
         console.log(`✍️ Updating community glossary for ${work_id}`)
-        const glossary = await this.glossaryModel.updateCommunityGlossary(json, work_id)
+        const glossary = await this.glossaryModel.updateCommunityGlossary(json, work_id, newVersion)
         if (!glossary) {
             throw new NotFoundError(`Glossary for book ${work_id}`)
         } else {

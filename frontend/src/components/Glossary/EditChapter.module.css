@@ -1,53 +1,58 @@
-.parent {
+.parentContainer {
     margin-bottom: 12px;
-    border: 5px dashed black;
-    /* border-style: dashed; */
+    border: 5px dashed var(--black);
     padding: 10px;
 }
 
-.chapter {
+.editButton {
+    margin-bottom: 10px;
+}
+
+.row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 20px;
+    width: 100%;
 }
 
 .chapterInput {
-    width: 92%;
+    width: 85%;
     background-color: white;
-    padding: 13px;
+    padding: 10px;
     font-size: 24px;
-    font-family: "Special Elite";
-    cursor: pointer;
-    color: #242424;
+    font-family: var(--font-family-header);
+    color: var(--black);
+    margin: 10px auto;
+    border: 5px double var(--black);
 }
 
-.icon {
-    margin: 6px 8px;
-    font-size: 24px;
-}
-
-.content {
+.nameInput {
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin: 20px 0; 
-    overflow: auto;
-}
-
-.name {
-    width: 80%;
-    font-size: 24px;
     background-color: white;
-    border: 1px solid #242424;
-    padding: 4px 6px 8px ;
-    margin-right: 6px;
+    padding: 10px;
+    font-size: 24px;
+    font-family: var(--font-family-header);
+    margin: 10px auto;
+    color: var(--black);
+    border: 3px solid var(--black);
     float: left;
 }
 
+textarea {
+    border: 1px solid var(--black);
+    flex: 1
+}
+
 .description {
-    margin: 6px 0;
     font-size: 20px;
-    padding: 4px 6px 8px ;
+    padding: 4px 6px 8px;
+    margin: 10px auto;
     text-align: left;
+}
+
+input[type="checkbox"] {
+    accent-color: var(--highlightOrange);
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
 }

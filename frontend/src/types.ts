@@ -28,6 +28,7 @@ export interface BookPageResponse {
 export interface GlossaryUpdateResponse {
     success: boolean;
     glossary: GlossaryData;
+    version: number;
     message?: string;
 }
 

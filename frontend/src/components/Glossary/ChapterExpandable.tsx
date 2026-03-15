@@ -17,15 +17,16 @@ const ChapterExpandable = ({ chapter, work_id, onEdit }: ChapterExpandableProps)
                 <span>{chapter.chapter_name}</span>
                 {isExpanded ? <span>▲</span> : <span>▼</span>}
             </h2>
-            {isExpanded && <button onClick={onEdit}>EDIT</button>}
+            {isExpanded && <button className={styles.edit} onClick={onEdit}>edit chapter</button>}
 
             <div>
+                {isExpanded && <hr />}
                 {
                     chapter.characters.map((characterData: Character, index: number) => (
                         <div key={`${work_id}_${chapter.chapter_name}_${index}`} >
                             {isExpanded && (
                                 <div className={styles.content}>
-                                    <h5 className={styles.name}>{characterData.name}</h5>
+                                    <h5 className={characterData.central_character === true ? styles.centralName : styles.name}>{characterData.name}</h5>
                                     <p className={styles.description}>{characterData.description}</p>
                                 </div>
                             )}

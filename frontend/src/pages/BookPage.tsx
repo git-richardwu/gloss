@@ -5,12 +5,14 @@ import type { BookDetails, Chapter, GlossaryData } from '../types'
 import styles from './BookPage.module.css'
 import GlossarySection from "../components/Glossary/GlossarySection";
 import { glossaryAPI } from "../services/glossaryAPI";
+import axios from "axios";
 
 
 const BookPage = () => {
     const [loading, setLoading] = useState<boolean>(true)
     const [book, setBook] = useState<BookDetails | null>(null)
     const [glossary, setGlossary] = useState<GlossaryData | null>(null)
+    const [glossaryVersion, setGlossaryVersion] = useState<number>(1)
     const { work_id } = useParams<{ work_id: string }>();
     const [error, setError] = useState<string | null>(null);
     // const [updateTime, setUpdateTime] = useState<string | null>(null);
@@ -27,7 +29,7 @@ const BookPage = () => {
                 if (response.success) {
                     setBook(response.details)
                     setGlossary(response.glossary.glossary_content)
-
+                    setGlossaryVersion(response.glossary.version_number)
                     // setUpdateTime(response.glossary.updated_at)
                 } else {
                     setError('Failed to get book detail')
@@ -55,22 +57,22 @@ const BookPage = () => {
             ...glossary,
             chapters: updatedChapters
         }
-
         setGlossary(updatedGlossary)
-        console.log('Sending to API:', {
-            work_id,
-            glossary
-        });
+        console.log('Sending to API:', { work_id, glossary });
         try {
             console.log('Updating...')
-            const response = await glossaryAPI.updateCommunityGlossary(updatedGlossary, work_id)
-            if (response.success) {
-                console.log('Update success!')
+            const response = await glossaryAPI.updateCommunityGlossary(updatedGlossary, work_id, glossaryVersion)
+            console.log('Update success!')
+            setGlossaryVersion(response.version)
+        } catch (err: unknown) {
+            if (axios.isAxiosError(err)) {
+                if (err.response?.status === 409) {
+                    console.log(err.response?.data)
+                }
+            } else {
+                setError('Error updating book')
+                console.log(err)
             }
-        } catch (err) {
-            //Revert
-            setError('Error updating book')
-            console.log(err)
         }
     }
 
@@ -105,6 +107,7 @@ const BookPage = () => {
                 <p className={styles.description}>{book?.descript}</p>
             </div>
             <div className={styles.right}>
+                <h1>Ver. {glossaryVersion}</h1>
                 <GlossarySection glossary={glossary} work_id={work_id} onGlossaryChange={setGlossary} onUpdateGlossaryDB={handleSaveUpdateToDatabase} />
             </div>
         </div>

@@ -4,12 +4,15 @@
 
 .chapter {
     padding: 13px;
-    width: 90%;
-    background-color: #242424;
-    color: #ECECEC;
+    background-color: var(--black);
+    color: var(--off-white);
     display: flex;
     justify-content: space-between;
     cursor: pointer;
+}
+
+.edit {
+    margin-top: 12px;
 }
 
 .content {
@@ -19,8 +22,15 @@
 
 .name {
     font-size: 24px;
-    background-color: #EADFCD;
-    border: 1px solid #242424;
+    background-color: var(--highlightYellow);
+    padding: 4px 6px 8px ;
+    margin-right: 6px;
+    float: left;
+}
+
+.centralName {
+    font-size: 24px;
+    background-color: var(--highlightOrange);
     padding: 4px 6px 8px ;
     margin-right: 6px;
     float: left;

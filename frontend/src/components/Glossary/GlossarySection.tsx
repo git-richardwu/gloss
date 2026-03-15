@@ -15,6 +15,7 @@ const GlossarySection = ({ glossary, work_id, onGlossaryChange, onUpdateGlossary
 
     const [editingChapterIndex, setEditingChapterIndex] = useState<number | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const [signalNew, setSignalNew] = useState<boolean>(false)
 
     const handleAddChapter = () => {
         if (editingChapterIndex) {
@@ -27,15 +28,12 @@ const GlossarySection = ({ glossary, work_id, onGlossaryChange, onUpdateGlossary
         const newChapter: Chapter = {
             chapter_name: `Chapter ${lastChapterIndex}`,
             characters: glossary.chapters[lastChapterIndex - 1].characters
-            // characters: [{
-            //     name: "Character", description: "Placeholder Description",
-            //     central_character: false
-            // }]
         }
         onGlossaryChange({
             ...glossary,
             chapters: [...glossary.chapters, newChapter]
         })
+        setSignalNew(true)
         setEditingChapterIndex(lastChapterIndex);
     }
 
@@ -56,6 +54,7 @@ const GlossarySection = ({ glossary, work_id, onGlossaryChange, onUpdateGlossary
         } catch (error) {
             console.log(`Saving failed for chapter ${chapterIndex}:`, error);
         } finally {
+            setSignalNew(false)
             setLoading(false);
             setEditingChapterIndex(null);
         }
@@ -73,7 +72,7 @@ const GlossarySection = ({ glossary, work_id, onGlossaryChange, onUpdateGlossary
 
     return (
         <div className={styles.parent}><h1>Community Glossary</h1>
-            <button onClick={handleAddChapter}>Add Chapter</button>
+            <button onClick={handleAddChapter}>add chapter</button>
             <button onClick={() => setLoading(true)}>test loading</button>
 
             <div className={styles.glossarySection}>
@@ -85,6 +84,7 @@ const GlossarySection = ({ glossary, work_id, onGlossaryChange, onUpdateGlossary
                                 onSave={(updatedChapter) => handleSaveLoading(chapterIndex, updatedChapter)}
                                 onCancel={() => setEditingChapterIndex(null)}
                                 onDelete={() => handleDeleteChapter(chapterIndex)}
+                                isNew={signalNew}
                             />)
                             : (<ChapterExpandable
                                 chapter={chapter}

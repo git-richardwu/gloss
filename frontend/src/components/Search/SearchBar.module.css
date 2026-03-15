@@ -18,11 +18,11 @@
 .search_result_item {
     display: flex;
     align-items: center;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     margin: 12px 0 12px;
-    background-color: #EADFCD;
+    background-color: var(--black);
+    color: var(--off-white);
     width: auto;
-    
 }
 
 .image {
@@ -43,5 +43,5 @@
 .textDecoration {
     text-decoration: none;
     user-select: none;
-    color: #242424;
+    color: var(--black);
 }
