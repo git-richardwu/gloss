@@ -9,21 +9,21 @@ class bookController {
         try {
             const {q: query, limit} = req.query;
             const serviceRes = await this.bookService.searchOpenLibraryAndSave(query, limit || 10)
-            res.status(200).json(serviceRes)
+            return res.status(200).json(serviceRes)
         } catch (error) {
             if (error instanceof DatabaseConnectionError) {
-                res.status(503).json({ error: 'Database unavailable' })
+                return res.status(503).json({ error: 'Database unavailable' })
             } else if (error instanceof ExternalServiceError) {
-                res.status(503).json({ error: 'Book search service unavailable' })
+                return res.status(503).json({ error: 'Book search service unavailable' })
             } else if (error instanceof ValidationError) {
-                res.status(400).json({ error: error.message })
+                return res.status(400).json({ error: error.message })
             } else if (error instanceof NotFoundError) {
-                res.status(404).json({ error: error.message })
+                return res.status(404).json({ error: error.message })
             } else if (error instanceof DuplicateError) {
-                res.status(409).json({ error: error.message })
+                return res.status(409).json({ error: error.message })
             } else {
                 console.error('Unexpected search controller error: ', error)
-                res.status(500).json({ error: 'Internal service error' })
+                return res.status(500).json({ error: 'Internal service error' })
             }
         }
     }
@@ -33,18 +33,18 @@ class bookController {
             const { id } = req.params;
             const serviceRes = await this.bookService.getOrFetchDescription(id)
             const communityGlossary = await this.glossaryService.getOrCreateGlossary(id)
-            res.status(200).json({details: serviceRes.book, glossary: communityGlossary.glossary})
+            return res.status(200).json({details: serviceRes.book, glossary: communityGlossary.glossary})
         }
         catch (error) {
             if (error instanceof DatabaseConnectionError) {
-                res.status(503).json({error: 'Database unavailable'})
+                return res.status(503).json({error: 'Database unavailable'})
             } else if (error instanceof ExternalServiceError) {
-                res.status(503).json({error: 'Book search service unavailable'})
+                return res.status(503).json({error: 'Book search service unavailable'})
             } else if (error instanceof ValidationError) {
-                res.status(400).json({error: error.message})
+                return res.status(400).json({error: error.message})
             } else {
                 console.error('Unexpected search controller error: ', error)
-                res.status(500).json({error: 'Internal service error'})
+                return res.status(500).json({error: 'Internal service error'})
             }
         }
     }
