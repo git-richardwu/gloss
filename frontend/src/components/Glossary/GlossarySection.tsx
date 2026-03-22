@@ -9,10 +9,10 @@ interface GlossaryProps {
     glossary: GlossaryData;
     work_id: string;
     onGlossaryChange: (updatedGlossary: GlossaryData) => void;
-    onUpdateGlossaryDB: (index: number, updatedChapter: Chapter) => Promise<void>;
+    onSaveChapter: (index: number, updatedChapter: Chapter, version: undefined | number) => Promise<void>;
+    onDeleteChapter: (updatedGlossary: GlossaryData) => void
 }
-const GlossarySection = ({ glossary, work_id, onGlossaryChange, onUpdateGlossaryDB }: GlossaryProps) => {
-
+const GlossarySection = ({ glossary, work_id, onGlossaryChange, onSaveChapter, onDeleteChapter }: GlossaryProps) => {
     const [editingChapterIndex, setEditingChapterIndex] = useState<number | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [signalNew, setSignalNew] = useState<boolean>(false)
@@ -38,19 +38,21 @@ const GlossarySection = ({ glossary, work_id, onGlossaryChange, onUpdateGlossary
     }
 
     const handleDeleteChapter = (index: number) => {
-        if (confirm('Delete this chapter?')) {
-            const updatedChapters = glossary.chapters.filter((_, i) => i !== index)
-            onGlossaryChange({
-                ...glossary,
-                chapters: updatedChapters ?? []
-            });
+        const updatedChapters = glossary.chapters.filter((_, i) => i !== index)
+        const updatedGlossary = {
+            ...glossary,
+            chapters: updatedChapters ?? []
         }
+        onGlossaryChange(
+            updatedGlossary
+        );
+        onDeleteChapter(updatedGlossary);
     }
 
     const handleSaveLoading = async (chapterIndex: number, updatedChapter: Chapter) => {
         try {
             setLoading(true);
-            await onUpdateGlossaryDB(chapterIndex, updatedChapter);
+            await onSaveChapter(chapterIndex, updatedChapter, undefined);
         } catch (error) {
             console.log(`Saving failed for chapter ${chapterIndex}:`, error);
         } finally {

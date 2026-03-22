@@ -3,6 +3,7 @@ import type { Character, Chapter } from '../../types';
 import styles from './EditChapter.module.css'
 import { RiEdit2Fill } from "react-icons/ri";
 import { FaTrashAlt } from "react-icons/fa";
+import DeletedChapter from "./DeletedChapter";
 
 interface EditChapterProps {
     chapter: Chapter;
@@ -25,9 +26,9 @@ interface UnsavedChapterChanges {
 }
 
 const EditChapter = ({ chapter, work_id, onSave, onCancel, onDelete, isNew }: EditChapterProps) => {
-
-    const [editingChapter, setEditingChapter] = useState<Chapter>(chapter)
-    const [originalChapter, setOriginalChapter] = useState<Chapter>(chapter)
+    const [editingChapter, setEditingChapter] = useState<Chapter>(chapter);
+    const [originalChapter, setOriginalChapter] = useState<Chapter>(chapter);
+    const [deleted, setDeleted] = useState<boolean>(false);
     const [unsavedChanges, setUnsavedChanges] = useState<UnsavedChapterChanges>({
         chapter_name: false,
         characters: {
@@ -106,6 +107,7 @@ const EditChapter = ({ chapter, work_id, onSave, onCancel, onDelete, isNew }: Ed
                 hasChanges: false
             }))
         }
+        setDeleted(false);
     }
 
     const handleChapterNameChange = (value: string) => {
@@ -147,9 +149,13 @@ const EditChapter = ({ chapter, work_id, onSave, onCancel, onDelete, isNew }: Ed
         onCancel();
         setEditingChapter(originalChapter);
     }
+    const handleDeleteClick = () => {
+        setDeleted(true);
+    }
 
     return (
-        <form onSubmit={handleSubmitChanges} >
+        <div>
+            {deleted ? <DeletedChapter onConfirmDelete={onDelete} onCancel={handleCancel} /> : <form onSubmit={handleSubmitChanges}>
             <div className={styles.parentContainer}>
                 <button className={styles.editButton} type="submit">save</button>
                 <button className={styles.editButton} type="button" onClick={handleCancel}>cancel</button>
@@ -157,7 +163,7 @@ const EditChapter = ({ chapter, work_id, onSave, onCancel, onDelete, isNew }: Ed
                 {unsavedChanges.hasChanges && <h1>UNSAVED CHANGES</h1>}
                 <div className={styles.row}>
                     <input className={styles.chapterInput} value={editingChapter.chapter_name} onChange={(e) => handleChapterNameChange(e.target.value)} required />
-                    <button type="button" onClick={onDelete}>delete chapter</button>
+                    <button type="button" onClick={handleDeleteClick}>delete chapter</button>
                 </div>
                 <div id="characterList">
                     {
@@ -186,7 +192,8 @@ const EditChapter = ({ chapter, work_id, onSave, onCancel, onDelete, isNew }: Ed
 
                 </div>
             </div>
-        </form>
+        </form>}
+        </div>
     )
 }
 

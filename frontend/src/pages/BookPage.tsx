@@ -1,20 +1,23 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { bookAPI } from "../services/bookAPI"
-import type { BookDetails, Chapter, GlossaryData } from '../types'
+import type { BookDetails, Chapter, GlossaryData, ConflictingData } from '../types'
 import styles from './BookPage.module.css'
 import GlossarySection from "../components/Glossary/GlossarySection";
+import ConflictResolveSection from "../components/Glossary/ConflictResolve";
 import { glossaryAPI } from "../services/glossaryAPI";
+import { findChapterConflicts } from "../services/findChapterConflicts";
 import axios from "axios";
 
-
 const BookPage = () => {
-    const [loading, setLoading] = useState<boolean>(true)
-    const [book, setBook] = useState<BookDetails | null>(null)
-    const [glossary, setGlossary] = useState<GlossaryData | null>(null)
-    const [glossaryVersion, setGlossaryVersion] = useState<number>(1)
+    const [loading, setLoading] = useState<boolean>(true);
+    const [book, setBook] = useState<BookDetails | null>(null);
+    const [glossary, setGlossary] = useState<GlossaryData | null>(null);
+    const [glossaryVersion, setGlossaryVersion] = useState<number>(1);
     const { work_id } = useParams<{ work_id: string }>();
     const [error, setError] = useState<string | null>(null);
+    const [conflictStatus, setConflictStatus] = useState<boolean>(false);
+    const [conflictingObject, setConflictingObject] = useState<ConflictingData | null>(null)
     // const [updateTime, setUpdateTime] = useState<string | null>(null);
 
     useEffect(() => {
@@ -43,10 +46,63 @@ const BookPage = () => {
         }
         fetchBookDetails();
         // setLoading(true)
-
     }, [work_id])
 
-    const handleSaveUpdateToDatabase = async (index: number, updatedChapter: Chapter) => {
+    const handleConflictResolve = (choice: 'ours' | 'theirs' | 'merged') => {
+        if (conflictingObject) {
+            const { ours, theirs, theirVersion, conflicts } = conflictingObject
+            if (choice === 'ours') {
+                setGlossaryVersion(theirVersion)
+                handleSaveChapter(conflicts[0].chapterIndex, conflicts[0].ourChapter, theirVersion)
+            }
+            else if (choice === 'theirs') {
+                setGlossary(theirs)
+                setGlossaryVersion(theirVersion)
+            }
+            else {
+                console.log('implement merge')
+            }
+            setConflictStatus(false)
+        }
+    }
+    
+
+    const handleDeleteChapter = async (updatedGlossary: GlossaryData) => {
+        if (!work_id || !glossary) {
+            setError('No book id or glossary provided')
+            return;
+        }
+        try {
+            const response = await glossaryAPI.updateCommunityGlossary(updatedGlossary, work_id, glossaryVersion)
+            console.log('Chapter deletion success!')
+            setGlossaryVersion(response.version)
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                const { currentGlossary, databaseVersion } : {currentGlossary: GlossaryData, databaseVersion: number} = err.response?.data
+                if (err.response?.status === 409) {
+                    if (JSON.stringify(currentGlossary) === JSON.stringify(updatedGlossary)) {
+                        console.log('Objects are equal. No direct conflicts')
+                        setGlossaryVersion(databaseVersion)
+                        return;
+                    }
+                    setConflictingObject({
+                        theirs: currentGlossary,
+                        ours: updatedGlossary,
+                        theirVersion: databaseVersion,
+                        conflicts: findChapterConflicts(updatedGlossary, currentGlossary)
+                    });
+                    console.log(findChapterConflicts(updatedGlossary, currentGlossary));
+                    setConflictStatus(true);
+                }
+            } else {
+                setError('Error updating book')
+                console.log(err)
+            }
+        }
+    }
+
+
+    const handleSaveChapter = async (index: number, updatedChapter: Chapter, catchUpVersion: number | undefined) => {
         if (!work_id || !glossary) {
             setError('No book id or glossary provided')
             return;
@@ -59,15 +115,30 @@ const BookPage = () => {
         }
         setGlossary(updatedGlossary)
         console.log('Sending to API:', { work_id, glossary });
+        const versionToUse = catchUpVersion !== undefined ? catchUpVersion : glossaryVersion;
         try {
             console.log('Updating...')
-            const response = await glossaryAPI.updateCommunityGlossary(updatedGlossary, work_id, glossaryVersion)
+            // const response = await glossaryAPI.updateCommunityGlossary(updatedGlossary, work_id, glossaryVersion)
+            const response = await glossaryAPI.updateCommunityGlossary(updatedGlossary, work_id, versionToUse)
             console.log('Update success!')
             setGlossaryVersion(response.version)
         } catch (err: unknown) {
             if (axios.isAxiosError(err)) {
+                const { currentGlossary, databaseVersion } : {currentGlossary: GlossaryData, databaseVersion: number} = err.response?.data
                 if (err.response?.status === 409) {
-                    console.log(err.response?.data)
+                    if (JSON.stringify(currentGlossary) === JSON.stringify(updatedGlossary)) {
+                        console.log('Objects are equal. No direct conflicts')
+                        setGlossaryVersion(databaseVersion)
+                        return;
+                    }
+                    setConflictingObject({
+                        theirs: currentGlossary,
+                        ours: updatedGlossary,
+                        theirVersion: databaseVersion,
+                        conflicts: findChapterConflicts(updatedGlossary, currentGlossary)
+                    });
+                    console.log(findChapterConflicts(updatedGlossary, currentGlossary));
+                    setConflictStatus(true);
                 }
             } else {
                 setError('Error updating book')
@@ -108,7 +179,8 @@ const BookPage = () => {
             </div>
             <div className={styles.right}>
                 <h1>Ver. {glossaryVersion}</h1>
-                <GlossarySection glossary={glossary} work_id={work_id} onGlossaryChange={setGlossary} onUpdateGlossaryDB={handleSaveUpdateToDatabase} />
+                {conflictStatus ? <ConflictResolveSection conflictingData={conflictingObject} onResolve={handleConflictResolve} /> :
+                    <GlossarySection glossary={glossary} work_id={work_id} onGlossaryChange={setGlossary} onSaveChapter={handleSaveChapter} onDeleteChapter={handleDeleteChapter}/>}
             </div>
         </div>
     )

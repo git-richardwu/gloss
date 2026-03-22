@@ -47,4 +47,22 @@ export interface Character {
     central_character: boolean;
 }
 
+export interface ChapterConflict {
+    ourChapter: Chapter;
+    theirChapter: Chapter;
+    chapterIndex: number;
+    chapterName: string;
+    differences: {
+        conflictDescription: string;
+        ourValue: any;
+        theirValue: any;
+    }[];
+}
+
+export interface ConflictingData {
+    ours: GlossaryData;
+    theirs: GlossaryData;
+    theirVersion: number;
+    conflicts: ChapterConflict[]
+}
 

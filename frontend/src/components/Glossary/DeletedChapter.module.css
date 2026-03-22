@@ -1,0 +1,5 @@
+.parentContainer {
+    margin-bottom: 12px;
+    border: 5px dashed var(--black);
+    padding: 10px;
+}
