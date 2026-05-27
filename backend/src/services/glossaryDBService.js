@@ -1,8 +1,12 @@
-const { ValidationError, NotFoundError, DuplicateError } = require('../errors/AppError');
+const { ValidationError, NotFoundError, DuplicateError, VersionConflictError } = require('../errors/AppError');
+const ConflictDetector = require('./conflictDetector');
+const MergeService = require('./mergeService');
 
 class glossaryDBService {
     constructor(glossaryModel) {
-        this.glossaryModel = glossaryModel
+        this.glossaryModel = glossaryModel;
+        this.conflictDetector = new ConflictDetector();
+        this.mergeService = new MergeService();
     }
 
     async getOrCreateGlossary(work_id) {
@@ -42,20 +46,25 @@ class glossaryDBService {
     }
     async getGlossaryByWorkID(work_id) {
         console.log(`🔍 Fetching community glossary of ${work_id}`)
-        const glossary = await this.glossaryModel.fetchCommunityGlossaryByID(work_id)
+        const glossary = await this.glossaryModel.fetchChaptersAndCharacters(work_id)
         if (!glossary) {
             return {
                 success: true,
                 glossary: null,
+                glossary_chapters: null,
+                chapter_characters: null,
                 message: `Community glossary for ${work_id} NOT found - create new one.`
             }
         }
+
         return {
             success: true,
             glossary: glossary,
             message: `Community glossary for ${work_id} found`
         }
     }
+
+
     async updateCommunityGlossary(json, work_id, newVersion) {
         if (!work_id) {
             throw new ValidationError('No work_id provided.')
@@ -63,14 +72,94 @@ class glossaryDBService {
         if (typeof json !== 'object' || !json) {
             throw new ValidationError('No object provided.')
         }
-        console.log(newVersion)
         console.log(`✍️ Updating community glossary for ${work_id}`)
-        const glossary = await this.glossaryModel.updateCommunityGlossary(json, work_id, newVersion)
-        if (!glossary) {
-            throw new NotFoundError(`Glossary for book ${work_id}`)
-        } else {
+        console.log('with')
+        console.log(json)
+
+        const currentGlossary = await this.glossaryModel.fetchChaptersAndCharacters(work_id);
+        if (!currentGlossary) throw new Error('Glossary not found!');
+
+        if (currentGlossary.glossary_details.version_number !== newVersion) {
+            console.log('Version conflict detected!');
+            const conflicts = this.conflictDetector.detectConflicts(json, currentGlossary.glossary_chapters)
+
+            if (this.conflictDetector.areChangesCompatible(conflicts)) {
+                console.log('No conflicts - auto-merging');
+                console.log(`Ours`)
+                console.log(json)
+                console.log(`In database`);
+                console.log(currentGlossary)
+
+                const merged = this.mergeService.autoMerge(json.glossary_chapters, currentGlossary.glossary_chapters);
+                return await this.performUpdate(merged, work_id);
+            }
+            throw new VersionConflictError(
+                conflicts,
+                currentGlossary.glossary_chapters,
+                json,
+                currentGlossary.glossary_details.version_number
+            );
+        }
+        return await this.performUpdate(json, work_id);
+    }
+
+    async resolveConflicts(work_id, ourGlossary, resolutions) {
+        console.log("Resolving conflict")
+        console.log(resolutions)
+        return await this.performUpdate(resolutions, work_id);
+    }
+
+    async performUpdate(glossaryData, work_id) {
+        console.log('from performUpdate')
+        console.log(glossaryData)
+        return await this.glossaryModel.transaction(async (trx) => {
+            const existingChapters = await this.glossaryModel.fetchChapters(work_id);
+            const existingChapterIDs = new Set(existingChapters.map(ch => ch.chapter_id));
+
+            const incomingChapterIDs = new Set();
+            const chapters = glossaryData || [];
+
+            for (const chapter of chapters) {
+                const realChapterID = this.glossaryModel.generateID(chapter.chapter_id);
+                incomingChapterIDs.add(realChapterID);
+                await this.glossaryModel.upsertChapter(work_id, {
+                    ...chapter,
+                    chapter_id: realChapterID
+                }, trx);
+                await this.syncCharacters(realChapterID, chapter.characters || [], work_id, trx);
+            }
+            for (const existingId of existingChapterIDs) {
+                if (!incomingChapterIDs.has(existingId)) {
+                    await this.glossaryModel.deleteChapter(existingId, trx)
+                }
+            }
+            await this.glossaryModel.incrementVersion(work_id, trx);
+            const updatedGlossary = await this.glossaryModel.fetchChaptersAndCharacters(work_id, trx);
+            console.log(updatedGlossary)
             return {
-                success: true, glossary: glossary, message: `${work_id}'s community glossary updated`
+                chapters: updatedGlossary.glossary_chapters,
+                details: updatedGlossary.glossary_details,
+                message: 'Glossary updated successfully'
+            };
+        })
+    }
+
+    async syncCharacters(chapter_id, incomingCharacters, work_id, trx) {
+        const existingCharacters = await this.glossaryModel.fetchCharacters(chapter_id, trx);
+        const existingCharacterIDs = new Set(existingCharacters.map(c => c.character_id));
+        const incomingCharactersIDs = new Set();
+        for (const character of incomingCharacters) {
+            const realCharID = this.glossaryModel.generateID(character.character_id);
+            incomingCharactersIDs.add(realCharID);
+
+            await this.glossaryModel.upsertCharacter(chapter_id, {
+                ...character,
+                character_id: realCharID
+            }, work_id, trx);
+        }
+        for (const existingId of existingCharacterIDs) {
+            if (!incomingCharactersIDs.has(existingId)) {
+                await this.glossaryModel.deleteCharacter(existingId, trx);
             }
         }
     }

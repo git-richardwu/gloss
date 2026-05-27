@@ -25,13 +25,33 @@ CREATE TABLE IF NOT EXISTS user_glossaries (
 );
 
 CREATE TABLE IF NOT EXISTS community_glossaries (
-    glossary_id SERIAL PRIMARY KEY,
-    work_id VARCHAR(20) UNIQUE NOT NULL,
+    work_id VARCHAR(20) PRIMARY KEY,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    glossary_content JSONB,
     version_number INTEGER DEFAULT 1
     CONSTRAINT fk_communityGlossaries_book
         FOREIGN KEY (work_id)
         REFERENCES books(work_id) ON DELETE CASCADE
 );
 
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE TABLE IF NOT EXISTS cg_chapters (
+    chapter_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	work_id VARCHAR(20),
+	chapter_name TEXT,
+    position NUMERIC (10, 4) NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_chapter_position
+        UNIQUE (work_id, position)
+	CONSTRAINT fk_glossary_chapter
+		FOREIGN KEY (glossary_id)
+		REFERENCES community_glossaries(glossary_id) ON DELETE CASCADE
+)
+
+CREATE TABLE IF NOT EXISTS chapter_characters (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    chapter_id UUID NOT NULL REFERENCES chapters(id) ON DELETE CASCADE,
+    character_name TEXT NOT NULL,
+    character_description TEXT,
+    central_character BOOLEAN DEFAULT FALSE,
+    work_id VARCHAR(20)
+)

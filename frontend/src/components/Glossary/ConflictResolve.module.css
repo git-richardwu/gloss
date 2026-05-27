@@ -1,34 +1,134 @@
-.flexParent {
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: #FFF3CD;
+    border: 1px solid var(--manila);
+}
+
+.header h2 {
+    margin: 0 0 8px 0;
+    color: #856404;
+}
+
+.quickActions {
     display: flex;
-    gap: 10px;
+    margin-left: 24px;
+    margin-bottom: 12px;
+    justify-content: center;
 }
 
-.column {
-    flex: 1;
-    padding: 1rem;
+.chapterConflict {
+    margin-bottom: 12px;
+    border: 1px solid var(--black);
+    overflow: hidden;
 }
 
-.name {
-    font-size: 24px;
+.chapterHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: var(--off-white);
+    cursor: pointer;
+}
+
+.chapterHeader:hover {
+    background-color: #E9ECEF;
+}
+
+.chapterDetails {
+    border-top: 1px solid #DDDDDD;
+    background-color: var(--off-white);
+    padding: 16px;
+}
+
+.comparisonRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.version {
+    padding: 12px;
+    background-color: var(--off-white);
+    border: 1px solid var(--black);
+    padding-right: 28px;
+}
+
+.version label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: #666666;
+}
+
+.characterConflict {
+    margin-top: 16px;
+    padding: 12px;
+    border: 1px solid #DDDDDD;
+}
+
+.fieldConflict {
+    margin-bottom: 16px;
+}
+
+.fieldConflict h4 {
+    margin: 0 0 8px 0;
+    color: #495057;
+}
+
+.choiceButton {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 6px 12px;
+    background-color: white;
+    color: var(--black);
+    border: 1px solid #DDDDDD;
+    cursor: pointer;
+}
+
+.choiceButton:hover {
+    background-color: #E9ECEF;
+}
+
+.activeChoice {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 6px 12px;
     background-color: var(--highlightYellow);
-    padding: 4px 6px 8px ;
+    color: var(--black);
+    border: 1px solid var(--highlightYellow);
+    cursor: pointer;
 }
 
-.centralName {
-    font-size: 24px;
-    background-color: var(--highlightOrange);
-    padding: 4px 6px 8px ;
+.footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
 }
 
-.description {
-    font-size: 20px;
-    margin: 2px 3px;
-    text-align: left;
+.expandIcon {
+    font-size: 12px;
+    color: #666666;
 }
 
-.chapter {
-    padding: 13px;
-    background-color: var(--black);
-    color: var(--off-white);
-    margin-bottom: 10px;
+.mergeDescription {
+    margin: 8px 0 10px 0;
+}
+
+.disabledButton {
+    background-color: #666666;
+    color: #DDDDDD;
+    border: none;
+    cursor: not-allowed;
 }

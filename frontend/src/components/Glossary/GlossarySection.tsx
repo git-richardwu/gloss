@@ -1,91 +1,114 @@
 import { useState } from "react";
-import type { Chapter, GlossaryData } from '../../types';
+import type { Chapter, Character } from '../../types';
 import styles from './GlossarySection.module.css'
 import ChapterExpandable from './ChapterExpandable'
 import EditChapter from "./EditChapter";
 import { IoIosSave } from "react-icons/io";
 
-interface GlossaryProps {
-    glossary: GlossaryData;
-    work_id: string;
-    onGlossaryChange: (updatedGlossary: GlossaryData) => void;
-    onSaveChapter: (index: number, updatedChapter: Chapter, version: undefined | number) => Promise<void>;
-    onDeleteChapter: (updatedGlossary: GlossaryData) => void
+interface ChapterOperations {
+    updateName: (chapterID: string, newName: string) => void;
+    updatePosition: (chapterID: string, newPosition: number) => void;
+    addChapter: (newChapter: Chapter) => void;
+    deleteChapter: (chapterID: string) => void;
 }
-const GlossarySection = ({ glossary, work_id, onGlossaryChange, onSaveChapter, onDeleteChapter }: GlossaryProps) => {
+
+interface CharacterOperations {
+    addCharacter: (chapterID: string, characterData: Character) => void;
+    updateCharacter: (characterID: string, newCharacterData: Partial<Character>) => void;
+    deleteCharacter: (characterID: string) => void;
+}
+
+interface GlossaryProps {
+    glossary: Chapter[];
+    work_id: string;
+    chapterOps: ChapterOperations;
+    characterOps: CharacterOperations;
+    onSaveAll: () => Promise<void>;
+    isDirty: boolean;
+}
+const GlossarySection = ({ glossary, work_id, onSaveAll, chapterOps, characterOps, isDirty }: GlossaryProps) => {
     const [editingChapterIndex, setEditingChapterIndex] = useState<number | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [saving, setSaving] = useState<boolean>(false);
     const [signalNew, setSignalNew] = useState<boolean>(false)
 
     const handleAddChapter = () => {
-        if (editingChapterIndex) {
-            if (!confirm('Adding a new chapter will delete your unsaved')) {
+        if (editingChapterIndex !== null) {
+            if (!confirm('Adding a new chapter will cancel your current edit. Continue?')) {
                 return;
             }
             setEditingChapterIndex(null)
         }
-        const lastChapterIndex = glossary.chapters.length;
-        const newChapter: Chapter = {
-            chapter_name: `Chapter ${lastChapterIndex}`,
-            characters: glossary.chapters[lastChapterIndex - 1].characters
-        }
-        onGlossaryChange({
-            ...glossary,
-            chapters: [...glossary.chapters, newChapter]
+        const lastChapter = glossary[glossary.length - 1];
+        const lastChapterIndex = glossary.length;
+        const copiedCharacters = lastChapter ? lastChapter.characters.map(char => ({
+            ...char, character_id: `temp-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+        })) : [];
+        chapterOps.addChapter({
+            chapter_name: `Chapter ${lastChapterIndex + 1}`,
+            chapter_id: `temp-${Date.now()}`, //temporary ID
+            characters: copiedCharacters,
+            position: lastChapterIndex,
+            work_id: work_id
         })
         setSignalNew(true)
         setEditingChapterIndex(lastChapterIndex);
     }
 
-    const handleDeleteChapter = (index: number) => {
-        const updatedChapters = glossary.chapters.filter((_, i) => i !== index)
-        const updatedGlossary = {
-            ...glossary,
-            chapters: updatedChapters ?? []
-        }
-        onGlossaryChange(
-            updatedGlossary
-        );
-        onDeleteChapter(updatedGlossary);
-    }
-
-    const handleSaveLoading = async (chapterIndex: number, updatedChapter: Chapter) => {
-        try {
-            setLoading(true);
-            await onSaveChapter(chapterIndex, updatedChapter, undefined);
-        } catch (error) {
-            console.log(`Saving failed for chapter ${chapterIndex}:`, error);
-        } finally {
-            setSignalNew(false)
-            setLoading(false);
+    const handleDeleteChapter = (chapterID: string) => {
+        chapterOps.deleteChapter(chapterID);
+        const deletedIndex = glossary.findIndex(ch => ch.chapter_id === chapterID);
+        if (editingChapterIndex === deletedIndex) {
             setEditingChapterIndex(null);
         }
     }
 
-    if (loading) {
+    const handleSaveAll = async () => {
+        try {
+            setSaving(true); //saving
+            await onSaveAll();
+            setEditingChapterIndex(null);
+            setSignalNew(false)
+        } catch (error) {
+            console.error('Failed to save:', error);
+            alert('Failed to save glossary. Please try again.');
+        } finally {
+            setSaving(false);
+        }
+    }
+
+    if (saving) {
         return (
             <div className={styles.loading}>
-                <IoIosSave className={styles.icon}/>
+                <IoIosSave className={styles.icon} />
                 <h1>saving glossary...</h1>
-                <button onClick={() => setLoading(false)}>test loading</button>
             </div>
         )
     }
 
     return (
         <div className={styles.parent}><h1>Community Glossary</h1>
-            <button onClick={handleAddChapter}>add chapter</button>
-            <button onClick={() => setLoading(true)}>test loading</button>
+            <button className="secondaryButton" onClick={handleAddChapter}>add chapter</button>
+            {isDirty && (
+                <button
+                    onClick={handleSaveAll}
+                    className={styles.saveButton}
+                >
+                    save all changes
+                </button>
+            )}
+            {/* <button onClick={() => setLoading(true)}>test loading</button> */}
 
             <div className={styles.glossarySection}>
-                {glossary.chapters.map((chapter: Chapter, chapterIndex: number) => (
-                    <div key={`${work_id}_${chapter.chapter_name}`}>
+                {glossary?.map((chapter: Chapter, chapterIndex: number) => (
+                    <div key={`${chapter.chapter_id}`}>
                         {editingChapterIndex === chapterIndex ?
                             (<EditChapter
                                 chapter={chapter} work_id={work_id}
-                                onSave={(updatedChapter) => handleSaveLoading(chapterIndex, updatedChapter)}
+                                chapterOps={chapterOps}
+                                characterOps={characterOps}
                                 onCancel={() => setEditingChapterIndex(null)}
-                                onDelete={() => handleDeleteChapter(chapterIndex)}
+                                // onDelete={() => handleDeleteChapter(chapterIndex)}
+                                onDelete={() => handleDeleteChapter(chapter.chapter_id)}
                                 isNew={signalNew}
                             />)
                             : (<ChapterExpandable

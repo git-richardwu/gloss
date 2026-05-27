@@ -1,104 +1,224 @@
 // const db = require('../database');
+const { randomUUID } = require('crypto');
 
 class GlossaryModel {
     constructor(db) {
         this.db = db
     }
-    // static async addUserGlossary(gloss_id, user_id, work_id, updated_at, glossary_content, is_public, num_of_likes) {
-    //     const query = `INSERT INTO user_glossaries (gloss_id, user_id, work_id, created_at, glossary_content, is_public, num_of_likes)
-    //     VALUES ($1, $2, $3, $4, $5, $6, $7)
-    //     RETURNING *`
-    //     const values = [gloss_id, user_id, work_id, updated_at, glossary_content, is_public, num_of_likes];
-    //     try {
-    //         const res = await db.query(query, values);
-    //         return res.rows[0]
-    //     } catch (err) {
-    //         console.error('Error adding glossary', err.stack);
-    //         throw err;
-    //     }
-    // }
-    // static async updateGlossary(gloss_id, updated_at, glossary_content) {
-    //     const query = `UPDATE user_glossaries
-    //     SET glossary_content = $3, updated_at = $2
-    //     WHERE gloss_id = $1
-    //     RETURN *`
-    //     const values = [gloss_id, updated_at, glossary_content];
-    //     try {
-    //         const res = await db.query(query, values);
-    //         return res.rows[0]
-    //     } catch (err) {
-    //         console.error('Error updating glossary', err.stack);
-    //         throw err;
-    //     }
-    // }
-    // static async deleteGlossary(gloss_id) {
-    //     const query = `DELETE FROM user_glossaries WHERE gloss_id = $1
-    //     RETURNING *`
-    //     const res = await db.query(query, [gloss_id])
-    //     return res.rows[0]
-    // }
-    async addCommunityGlossary(work_id) {
-        if (!this.db) {
+
+    async transaction(callback) {
+        const client = await this.db.pool.connect();
+        try {
+            await client.query('BEGIN');
+            const result = await callback(client);
+            await client.query('COMMIT');
+            return result;
+        } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+        } finally {
+            client.release();
+        }
+    }
+
+    async incrementVersion(work_id, client = this.db) {
+        if (!client) {
             throw new DatabaseConnectionError();
         }
-        const query = `INSERT INTO community_glossaries (work_id, version_number, glossary_content)
-        VALUES ($1, $2, $3::jsonb)
-        RETURNING *`
-        const values = [work_id, 1, {
-            "chapters": [
+        const query = `
+            UPDATE community_glossaries 
+            SET version_number = version_number + 1
+            WHERE work_id = $1
+        `;
+        await client.query(query, [work_id]);
+    }
+
+    async addCommunityGlossary(work_id, client = this.db) {
+        if (!client) {
+            throw new DatabaseConnectionError();
+        }
+        const sampleChaptersID = randomUUID();
+        const sampleCharacterID = randomUUID();
+
+        // create glossary
+        const glossaryQuery = `INSERT INTO community_glossaries (work_id)
+         VALUES ($1)
+         RETURNING *`
+        const glossaryResult = await this.db.query(glossaryQuery, [work_id]);
+        // add sample chapter
+        const chapterQuery = `INSERT INTO cg_chapters (chapter_id, work_id, chapter_name, position, updated_at)
+         VALUES ($1, $2, $3, $4, NOW())
+         RETURNING *`
+        const chapterResult = await this.db.query(chapterQuery, [sampleChaptersID, work_id, "Placeholder Chapter", 0]);
+
+        // add sample character
+        const characterQuery = `INSERT INTO chapter_characters (character_id, chapter_id, character_name, character_description, central_character)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING *`
+        const characterResult = await this.db.query(characterQuery, [sampleCharacterID, sampleChaptersID, "Character A", "Placeholder Text", true]);
+        await client.query('COMMIT');
+        console.log('Community glossary created successfully!!');
+        return {
+            glossary_details: glossaryResult.rows[0],
+            glossary_chapters: [
                 {
-                    "chapter_name": "Prologue",
-                    "characters": [
+                    chapter_id: chapterResult.rows[0].chapter_id,
+                    work_id: chapterResult.rows[0].work_id,
+                    chapter_name: chapterResult.rows[0].chapter_name,
+                    position: chapterResult.rows[0].position,
+                    characters: [
                         {
-                            "name": "Character A",
-                            "description": "Main character",
-                            "central_character": true
-                        },
-                        {
-                            "name": "Character B",
-                            "description": "Side character",
-                            "central_character": true
-                        }
-                    ]
-                },
-                {
-                    "chapter_name": "Chapter 1",
-                    "characters": [
-                        {
-                            "name": "Character A",
-                            "description": "Main character",
-                            "central_character": true
-                        },
-                        {
-                            "name": "Character B",
-                            "description": "Side character",
-                            "central_character": true
+                            character_id: characterResult.rows[0].character_id,
+                            chapter_id: characterResult.rows[0].chapter_id,
+                            work_id: characterResult.rows[0].work_id,
+                            character_name: characterResult.rows[0].character_name,
+                            character_description: characterResult.rows[0].character_description,
+                            central_character: characterResult.rows[0].central_character
                         }
                     ]
                 }
             ]
-        }];
-        const result = await this.db.query(query, values);
-        return result.rows[0];
+        }
     }
-    async fetchCommunityGlossaryByID(work_id) {
-        if (!this.db) {
+
+    async fetchCommunityGlossaryByID(work_id, client = this.db) {
+        if (!client) {
             throw new DatabaseConnectionError();
         }
         const query = `SELECT * FROM community_glossaries WHERE work_id = $1`
-        const res = await this.db.query(query, [work_id])
+        const res = await client.query(query, [work_id])
         return res.rows[0]
     }
-    async updateCommunityGlossary(json, work_id, newVersion) {
-        if (!this.db) {
+
+    async fetchChaptersAndCharacters(work_id, client = this.db) { //initial
+        if (!client) {
             throw new DatabaseConnectionError();
         }
-        const query = `UPDATE community_glossaries
-        SET glossary_content = $1, version_number = $3
-        WHERE work_id = $2
+        const query = `
+        SELECT 
+            json_build_object(
+                'glossary_details', json_build_object(
+                    'glossary_id', g.glossary_id,
+                    'work_id', g.work_id,
+                    'version_number', g.version_number
+                ),
+                'glossary_chapters', (
+                    SELECT json_agg(
+                        json_build_object(
+                            'chapter_id', gc.chapter_id,
+                            'work_id', gc.work_id,
+                            'chapter_name', gc.chapter_name,
+                            'position', gc.position,
+                            'characters', COALESCE(
+                                (
+                                    SELECT json_agg(cc.*)
+                                    FROM chapter_characters cc
+                                    WHERE cc.chapter_id = gc.chapter_id
+                                ),
+                                '[]'::json
+                            )
+                        )
+                        ORDER BY gc.position
+                    )
+                    FROM cg_chapters gc
+                    WHERE gc.work_id = g.work_id
+                )
+            ) AS data
+        FROM community_glossaries g
+        WHERE g.work_id = $1
+    `;
+        const res = await client.query(query, [work_id]);
+        return res.rows[0]?.data || null;
+    }
+
+    async fetchChapters(work_id, client = this.db) { // works
+        if (!client) {
+            throw new DatabaseConnectionError();
+        }
+        const query = `SELECT * FROM cg_chapters WHERE work_id = $1 ORDER BY position ASC`
+        const res = await client.query(query, [work_id])
+        return res.rows
+    }
+
+    async upsertChapter(work_id, chapter, client = this.db) {
+        if (!client) {
+            throw new DatabaseConnectionError();
+        }
+        const query = `
+            INSERT INTO cg_chapters 
+                (chapter_id, work_id, chapter_name, position)
+            VALUES ($1, $2, $3, $4)
+            ON CONFLICT (chapter_id) 
+            DO UPDATE SET
+                chapter_name = EXCLUDED.chapter_name,
+                position = EXCLUDED.position,
+                updated_at = NOW()
+        `;
+        const chapterResult = await client.query(query, [chapter.chapter_id, work_id, chapter.chapter_name, chapter.position]);
+        return chapterResult.rows[0];
+    }
+
+    async deleteChapter(chapter_id, client = this.db) {
+        if (!client) {
+            throw new DatabaseConnectionError();
+        }
+        const query = `DELETE FROM cg_chapters
+        WHERE chapter_id = $1
         RETURNING *`
-        const result = await this.db.query(query, [json, work_id, newVersion]);
+        const result = await client.query(query, [chapter_id]);
         return result.rows[0];
+    }
+
+    async fetchCharacters(chapter_id, client = this.db) { // works
+        if (!client) {
+            throw new DatabaseConnectionError();
+        }
+        const query = `SELECT * FROM chapter_characters WHERE chapter_id = $1`
+        const res = await client.query(query, [chapter_id])
+        return res.rows
+    }
+
+    async upsertCharacter(chapter_id, character, work_id, client = this.db) {
+        if (!client) {
+            throw new DatabaseConnectionError();
+        }
+        const query = `
+            INSERT INTO chapter_characters 
+                (character_id, chapter_id, character_name, character_description, 
+                 central_character, work_id)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            ON CONFLICT (character_id) 
+            DO UPDATE SET
+                chapter_id = EXCLUDED.chapter_id,
+                character_name = EXCLUDED.character_name,
+                character_description = EXCLUDED.character_description,
+                central_character = EXCLUDED.central_character
+        `;
+
+        const characterResult = await client.query(query, [
+            character.character_id,
+            chapter_id,
+            character.character_name,
+            character.character_description || '',
+            character.central_character || false,
+            work_id
+        ]);
+        return characterResult.rows[0];
+
+    }
+    async deleteCharacter(character_id, client = this.db) {
+        const query = `DELETE FROM chapter_characters
+        WHERE character_id = $1
+        RETURNING *`
+        const result = await client.query(query, [character_id]);
+        return result.rows[0];
+    }
+
+    generateID(id) {
+        if (!id || id.startsWith('temp-')) {
+            return randomUUID();
+        }
+        return id;
     }
 }
 

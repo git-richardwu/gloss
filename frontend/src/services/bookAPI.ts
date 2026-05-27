@@ -12,13 +12,14 @@ export const bookAPI = {
             books: response.data.books
         }
     },
-    fetchBookPageAndLoadIfNeeded: async (workID: string) => {
+    fetchBookPageAndLoadIfNeeded: async (workID: string): Promise<BookPageResponse> => {
         const response = await axios.get(`${API_BASE_URL}/books/${workID}`);
         console.log(response)
         return {
             success: true,
-            details: response.data.details,
-            glossary: response.data.glossary,
+            openLibraryDetails: response.data.details,
+            glossary_chapters: response.data.glossary.glossary_chapters,
+            versionNum: response.data.glossary.glossary_details.version_number
         }
     },
 }

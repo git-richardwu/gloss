@@ -12,9 +12,9 @@ const SearchResults = ({ books }: SearchResultsProps) => {
             {books.length > 0 && (
                 <div className={styles.center}>
                     <ul className={styles.list_style}>
-                        {books.map((book) => (
-                            <Link className={styles.textDecoration} to={`/book/${book.work_id}`}>
-                            <li key={book.work_id} className={styles.search_result_item}>
+                        {books.map((book, index) => (
+                            <Link key={book.work_id} className={styles.textDecoration} to={`/book/${book.work_id}`}>
+                            <li className={styles.search_result_item}>
                                 <img className={styles.image} src={`${book.cover_url}` + 'M.jpg'} />
                                 <div className={styles.details}>
                                     <h3 className={styles.title}>{book.title}</h3>

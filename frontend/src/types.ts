@@ -21,48 +21,105 @@ export interface BookDetails {
 
 export interface BookPageResponse {
     success: boolean;
-    details: BookDetails;
-    glossary: GlossaryData;
+    openLibraryDetails: BookDetails;
+    glossary_chapters: Chapter[];
+    versionNum: number;
 }
 
 export interface GlossaryUpdateResponse {
     success: boolean;
-    glossary: GlossaryData;
+    glossary_chapters: Chapter[];
     version: number;
     message?: string;
 }
 
-export interface GlossaryData {
-    chapters: Chapter[];
-}
+// export interface GlossaryData {
+//     chapters: Chapter[];
+// }
 
 export interface Chapter {
+    chapter_id: string;
     chapter_name: string;
     characters: Character[];
+    position: number;
+    work_id: string;
 }
 
 export interface Character {
-    name: string;
-    description: string;
+    chapter_id: string;
+    character_name: string;
+    character_id: string;
+    character_description: string;
     central_character: boolean;
+    work_id: string;
 }
 
-export interface ChapterConflict {
-    ourChapter: Chapter;
-    theirChapter: Chapter;
-    chapterIndex: number;
-    chapterName: string;
-    differences: {
-        conflictDescription: string;
-        ourValue: any;
-        theirValue: any;
-    }[];
-}
+// export interface ChapterConflict {
+//     ourChapter: Chapter;
+//     theirChapter: Chapter;
+//     chapterIndex: number;
+//     chapterName: string;
+//     differences: {
+//         conflictDescription: string;
+//         ourValue: any;
+//         theirValue: any;
+//     }[];
+// }
 
 export interface ConflictingData {
-    ours: GlossaryData;
-    theirs: GlossaryData;
+    ours: Chapter[];
+    theirs: Chapter[];
     theirVersion: number;
     conflicts: ChapterConflict[]
 }
 
+export interface FieldConflict {
+    ours: string | boolean;
+    theirs: string | boolean;
+}
+
+export interface CharacterConflict {
+    character_id: string;
+    type: 'added_by_them' | 'added_by_us' | 'modified';
+    character_name?: string;
+    ours?: Character;
+    theirs?: Character;
+    differences?: Record<string, FieldConflict>;
+}
+
+export interface ChapterConflict {
+    chapter_id: string;
+    chapter_name: FieldConflict | null;
+    characters: CharacterConflict[];
+    hasConflict: boolean;
+}
+
+export interface NonConflictingChange {
+    type: 'chapter_added' | 'chapter_deleted';
+    chapter_id: string;
+    chapter_name: string;
+}
+
+export interface ConflictAnalysis {
+    hasConflicts: boolean;
+    chapterConflicts: ChapterConflict[];
+    characterConflicts: CharacterConflict[];
+    nonConflictingChanges: {
+        ours: NonConflictingChange[];
+        theirs: NonConflictingChange[];
+    };
+}
+
+export interface CharacterResolution {
+    character_id: string;
+    field: string;
+    choice: 'ours' | 'theirs';
+}
+
+export interface ChapterResolution {
+    chapter_id: string;
+    decisions: {
+        chapter_name?: 'ours' | 'theirs';
+        characters: CharacterResolution[];
+    };
+}

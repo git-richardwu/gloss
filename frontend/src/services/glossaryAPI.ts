@@ -1,16 +1,27 @@
 import axios from 'axios';
-import type { GlossaryData, GlossaryUpdateResponse } from '../types';
+import type { GlossaryUpdateResponse, Chapter, Character } from '../types';
 
 const API_BASE_URL = 'http://localhost:3000/api';
 
 export const glossaryAPI = {
-    updateCommunityGlossary: async (updatedGlossary: GlossaryData, workID: string, versionNumber: number): Promise<GlossaryUpdateResponse> => {
+    updateCommunityGlossary: async (updatedGlossary: Chapter[], workID: string, versionNumber: number): Promise<GlossaryUpdateResponse> => {
         const response = await axios.put(`${API_BASE_URL}/books/${workID}/glossary`, { userInputGlossaryContent: updatedGlossary, version: versionNumber });
+        console.log(response)
         return {
             success: true,
-            glossary: response.data.glossary,
-            version: response.data.glossary.version_number,
+            glossary_chapters: response.data.chapters,
+            version: response.data.details.version_number,
             message: response.data.message,
         }
+    },
+    resolveConflicts: async (workID: string, ourGlossary: Chapter[], resolutions: Chapter[]) => {
+        console.log("BEGIN RESOLUTION")
+        console.log(resolutions)
+        const response = await axios.post(`${API_BASE_URL}/books/${workID}/glossary/resolve-conflicts`,
+            {
+                ourGlossary: ourGlossary,
+                resolutions: resolutions
+            });
+        return response.data;
     }
 }

@@ -36,3 +36,15 @@ export class DuplicateError extends AppError {
         super(message, 409, details)
     }
 }
+
+export class VersionConflictError extends Error {
+    constructor(conflicts, currentGlossary, ourGlossary, databaseVersion) {
+        super('Version conflict');
+        this.name = 'VersionConflictError';
+        this.status = 409;
+        this.conflicts = conflicts;
+        this.currentGlossary = currentGlossary;
+        this.ourGlossary = ourGlossary;
+        this.databaseVersion = databaseVersion;
+    }
+}

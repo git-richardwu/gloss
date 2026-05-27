@@ -1,4 +1,4 @@
-const { ValidationError, NotFoundError, ExternalServiceError, DatabaseConnectionError, DuplicateError } = require('../errors/AppError');
+const { ValidationError, NotFoundError, ExternalServiceError, DatabaseConnectionError, DuplicateError, VersionConflictError } = require('../errors/AppError');
 
 class glossaryController {
     constructor(glossaryService) {
@@ -8,21 +8,9 @@ class glossaryController {
         try {
             const { userInputGlossaryContent, version } = req.body;
             const { id } = req.params
-            const responseObject = await this.glossaryService.getGlossaryByWorkID(id)
-
-            if (responseObject.glossary.version_number !== version) {
-                return res.status(409).json({ error: 'Conflict',
-                    message: 'This glossary has been updated by another user',
-                    currentGlossary: responseObject.glossary.glossary_content,
-                    databaseVersion: responseObject.glossary.version_number,
-                    yourVersion: version,
-                    yourGlossary: userInputGlossaryContent
-                 });
-            }
-
-            const updatedVersion = responseObject.glossary.version_number + 1
-            const serviceRes = await this.glossaryService.updateCommunityGlossary(userInputGlossaryContent, id, updatedVersion)
-            return res.status(200).json(serviceRes)
+            // version update
+            const responseObject = await this.glossaryService.updateCommunityGlossary(userInputGlossaryContent, id, version);
+            return res.status(200).json(responseObject)
         } catch (error) {
             if (error instanceof DatabaseConnectionError) {
                 return res.status(503).json({ error: 'Database unavailable' })
@@ -34,12 +22,19 @@ class glossaryController {
                 return res.status(404).json({ error: error.message })
             } else if (error instanceof DuplicateError) {
                 return res.status(409).json({ error: error.message })
+            } else if (error instanceof VersionConflictError) {
+                return res.status(409).json({ error: error.message,
+                    conflicts: error.conflicts,
+                    currentGlossary: error.currentGlossary,
+                    ourGlossary: error.ourGlossary,
+                    databaseVersion: error.databaseVersion })
             } else {
                 console.error('Unexpected search controller error: ', error)
                 return res.status(500).json({ error: 'Internal service error' })
             }
         }
     }
+
     async fetchGlossary(req, res) {
         try {
             const { id } = req.params
@@ -62,6 +57,7 @@ class glossaryController {
             }
         }
     }
+
     async createCommunityGlossary(req, res) {
         try {
             const { id } = req.params
@@ -84,6 +80,30 @@ class glossaryController {
             }
         }
     }
+
+    async resolveConflicts(req, res) {
+        try {
+            const { work_id } = req.params;
+            const { ourGlossary, resolutions } = req.body;
+            const result = await this.glossaryService.resolveConflicts(
+                work_id,
+                ourGlossary,
+                resolutions
+            );
+            res.json({
+                success: true,
+                ...result
+            });
+        } catch (error) {
+            console.error('Error resolving conflicts:', error);
+            res.status(500).json({
+                success: false,
+                message: error.message || 'Internal server error'
+            });
+        }
+    }
+
+
 }
 
 module.exports = glossaryController

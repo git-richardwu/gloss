@@ -14,8 +14,10 @@ html {
   --base-line-height: 1.5;
   --base-font-size: 16px;
   --base-font-weight: 400;
-  --black: #444444;
+  --black: #1A1A1A;
+  --border: #2A2A2A;
   --off-white: #F3F3F3;
+  --manila: #F1D592;
   --highlightYellow: #FBE553;
   --highlightOrange: #FD9048;
   --warningRed: #BA3B46;
@@ -23,31 +25,45 @@ html {
 
 body {
   font-family: var(--font-family);
-  font-weight: var(--base-font-weight) ;
+  font-weight: var(--base-font-weight);
   line-height: var(--base-line-height);
   color: var(--black);
   background-color: var(--off-white);
+  background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  background-size: 4px 4px;
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-family-header);
   line-height: 1.3;
 }
 
-p, label {
+p,
+label {
   font-family: var(--font-family-regular);
   font-size: 16px;
 }
 
 button {
   background-color: var(--black);
-  border: none;
   color: var(--off-white);
-  font-family: var(--font-family-header);
-  font-size: 16px;
-  margin: 3px 8px;
-  padding: 14px 18px 12px;
+  border: 1px solid var(--border);
+  font-family: var(--font-family-regular);
+  /* font-size: 16px; */
+  font-weight: 500;
+  text-transform: uppercase;
+  margin: 4px 8px;
+  letter-spacing: 0.5px;
+  padding: 8px 16px;
+  border-radius: 0px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 1px 2px rgba(0,0,0,0.2);
+  transition: all 0.1s ease;
   cursor: pointer;
 }
 
@@ -81,4 +97,29 @@ hr {
   /* transform: rotate(-0.5deg); */
   width: 100%;
   margin: 10px auto;
+}
+
+.secondaryButton {
+  background-color: transparent;
+  color: #2C2C2C;
+  border: 1px dashed #8B7F6E;
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  padding: 6px 14px;
+  border-radius: 0px;
+  text-transform: none;
+}
+
+.secondaryButton:hover {
+  background-color: rgba(0,0,0,0.05);
+  border-style: solid;
+  border-color: #2C2C2C;
+}
+
+.deleteButton {
+  border-color: #EE4B2B;
+}
+
+.deleteButton:hover {
+  border-color: #EE4B2B;
 }

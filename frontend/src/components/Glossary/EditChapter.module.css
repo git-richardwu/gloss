@@ -1,7 +1,21 @@
 .parentContainer {
-    margin-bottom: 12px;
+    margin: 42px auto;
     border: 5px dashed var(--black);
     padding: 10px;
+    position: relative;
+}
+
+.parentContainer::before {
+  content: attr(edit-label);
+  position: absolute;
+  top: -42px;
+  left: 16px;
+  padding: 2px 25px;
+  font-size: 18px;
+  border: 5px solid var(--black);
+  border-bottom: 9px solid var(--black);
+  background-color: var(--manila);
+  font-family: var(--font-family-header);
 }
 
 .editButton {
@@ -40,6 +54,7 @@
 
 textarea {
     border: 1px solid var(--black);
+    font-family: var(--font-family-regular);
     flex: 1
 }
 
