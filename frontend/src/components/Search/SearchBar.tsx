@@ -9,7 +9,7 @@ const SearchBar = () => {
     const [results, setResults] = useState<Book[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    
+
     const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!query.trim()) {
@@ -37,25 +37,28 @@ const SearchBar = () => {
 
     return (
         <div>
-            <h1>BOOK SEARCH</h1>
+            <h1 className="brand">ARQS</h1>
+            <h2>A Community Character Glossary</h2>
+            <p>For when there's too many to track</p>
+
             <form onSubmit={handleSearch}>
                 <input type='text'
                     value={query}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
                     placeholder="Search books..."
                     className="search-input"
-                autoFocus/>
-                    <select onInput={(e: React.ChangeEvent<HTMLSelectElement>) => setLimit(parseInt(e.target.value))}>
-                        <option value={1}>1</option>
-                        <option value={3}>3</option>
-                        <option value={5}>5</option>
-                        <option value={10}>10</option>
-                    </select>
-                    <button type="submit" disabled={loading} className="search-button">
-                        {loading ? 'Searching...' : 'Search'} </button>
-                
+                    autoFocus />
+                <select onInput={(e: React.ChangeEvent<HTMLSelectElement>) => setLimit(parseInt(e.target.value))}>
+                    <option value={1}>1</option>
+                    <option value={3}>3</option>
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                </select>
+                <button type="submit" disabled={loading} className="search-button">
+                    {loading ? 'Searching...' : 'Search'} </button>
+
             </form>
-            <SearchResults books={results}/>
+            <SearchResults books={results} />
             {/* {results.length === 0 && query && !loading && !error && (
                 <p>No books found. Try a different search.</p>
             )} */}

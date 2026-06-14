@@ -105,9 +105,9 @@
     width: 100%;
     margin-top: 8px;
     padding: 6px 12px;
-    background-color: var(--highlightYellow);
+    background-color: var(--highlightBlue);
     color: var(--black);
-    border: 1px solid var(--highlightYellow);
+    border: 1px solid var(--highlightBlue);
     cursor: pointer;
 }
 

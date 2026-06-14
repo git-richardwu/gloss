@@ -7,7 +7,8 @@ import GlossarySection from "../components/Glossary/GlossarySection";
 import ConflictResolveSection from "../components/Glossary/ConflictResolve";
 import { glossaryAPI } from "../services/glossaryAPI";
 // import { findChapterConflicts } from "../services/findChapterConflicts";
-import axios, {AxiosError} from "axios";
+import { useNavigate } from "react-router-dom";
+import axios, { AxiosError } from "axios";
 
 interface ConflictState {
     conflicts: ConflictAnalysis;
@@ -30,6 +31,8 @@ const BookPage = () => {
     const [conflictState, setConflictState] = useState<ConflictState | null>(null);
     const [isDirty, setIsDirty] = useState<boolean>(false);
     // const [updateTime, setUpdateTime] = useState<string | null>(null);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!work_id) {
@@ -249,24 +252,33 @@ const BookPage = () => {
     }
 
     return (
-        <div className={styles.container}>
-            <div className={styles.left}>
-                <h1>{book?.title}</h1>
-                <h3>{book?.author}</h3>
-                <h3>{book?.year_published}</h3>
-                <img className={styles.image} src={`${book?.cover_url}M.jpg`} />
-                <p className={styles.description}>{book?.descript}</p>
-            </div>
-            <div className={styles.right}>
-                <h1>Ver. {glossaryVersion}</h1>
-                {conflictStatus && conflictState ? <ConflictResolveSection conflicts={conflictState.conflicts}
-                    ourGlossary={conflictState.ourGlossary}
-                    theirGlossary={conflictState.currentGlossary}
-                    databaseVersion={conflictState.databaseVersion}
-                    onResolve={handleConflictResolve}
-                    onCancel={() => setConflictStatus(false)} /> :
-                    <GlossarySection glossary={glossary} work_id={work_id} onSaveAll={handleSaveAll} chapterOps={chapterOps} characterOps={characterOps} isDirty={isDirty} />}
-                {/* <GlossarySection glossary={glossary} work_id={work_id} onGlossaryChange={setGlossary} onSaveChapter={handleSaveChapter} onDeleteChapter={handleDeleteChapter}/>} */}
+        <div>
+            <div className={styles.container}>
+                <div className={styles.left}>
+                    <button onClick={() => navigate('/')}>back to search</button>
+                    <h1 className={styles.bookTitle}>{book?.title}</h1>
+                    <div className={styles.poster_container}>
+                        <img className={styles.image} src={`${book?.cover_url}M.jpg`} />
+                        <div className={`${styles.postit} ${styles.postit_author}`}>
+                            <span className={styles.postit_text}>{book?.author}</span>
+                        </div>
+                        <div className={`${styles.postit} ${styles.postit_year}`}>
+                            <span className={styles.postit_text}>{book?.year_published}</span>
+                        </div>
+                    </div>
+                    <p className={styles.description}>{book?.descript}</p>
+                </div>
+                <div className={styles.right}>
+                    <h3>Ver. {glossaryVersion}</h3>
+                    {conflictStatus && conflictState ? <ConflictResolveSection conflicts={conflictState.conflicts}
+                        ourGlossary={conflictState.ourGlossary}
+                        theirGlossary={conflictState.currentGlossary}
+                        databaseVersion={conflictState.databaseVersion}
+                        onResolve={handleConflictResolve}
+                        onCancel={() => setConflictStatus(false)} /> :
+                        <GlossarySection glossary={glossary} work_id={work_id} onSaveAll={handleSaveAll} chapterOps={chapterOps} characterOps={characterOps} isDirty={isDirty} />}
+                    {/* <GlossarySection glossary={glossary} work_id={work_id} onGlossaryChange={setGlossary} onSaveChapter={handleSaveChapter} onDeleteChapter={handleDeleteChapter}/>} */}
+                </div>
             </div>
         </div>
     )

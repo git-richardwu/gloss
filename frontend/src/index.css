@@ -9,28 +9,27 @@ html {
 }
 
 :root {
-  --font-family-regular: "Courier Prime", monospace;
-  --font-family-header: "Special Elite", monospace;
+  --font-family-button: 'Courier New', monospace;
+  --font-family-regular: "DM Mono", monospace;
+  --font-family-header: "EB Garamond", serif;
   --base-line-height: 1.5;
   --base-font-size: 16px;
   --base-font-weight: 400;
-  --black: #1A1A1A;
+  --black: #39392D;
   --border: #2A2A2A;
-  --off-white: #F3F3F3;
-  --manila: #F1D592;
-  --highlightYellow: #FBE553;
-  --highlightOrange: #FD9048;
-  --warningRed: #BA3B46;
+  --off-white: #F3EBD8;
+  --manila: #F2D174;
+  --highlightBlue: #446793;
+  --highlightGreen: #15B097;
+  --highlightPink: #DD99BB;
+  --warningRed: #E95C49;
 }
 
 body {
-  font-family: var(--font-family);
   font-weight: var(--base-font-weight);
   line-height: var(--base-line-height);
   color: var(--black);
   background-color: var(--off-white);
-  background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px);
-  background-size: 4px 4px;
   overflow-x: hidden;
 }
 
@@ -41,29 +40,37 @@ h4,
 h5,
 h6 {
   font-family: var(--font-family-header);
-  line-height: 1.3;
+  line-height: 1.25;
+}
+
+.brand {
+  font-family: var(--font-family-header);
+  display: inline;
+  line-height: 1.25;
+  text-decoration: none; 
+  background-image: linear-gradient(to right, var(--highlightGreen) 33%, var(--highlightPink) 33% 66%, var(--highlightBlue) 66%);
+  background-position: 0 80%;
+  background-size: 100% 4px;
+  background-repeat: no-repeat;
+  padding-bottom: 4px;
 }
 
 p,
 label {
   font-family: var(--font-family-regular);
-  font-size: 16px;
+  font-size: var(--base-font-size);
 }
 
 button {
   background-color: var(--black);
   color: var(--off-white);
   border: 1px solid var(--border);
-  font-family: var(--font-family-regular);
-  /* font-size: 16px; */
+  font-family: var(--font-family-button);
   font-weight: 500;
   text-transform: uppercase;
   margin: 4px 8px;
   letter-spacing: 0.5px;
   padding: 8px 16px;
-  border-radius: 0px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 1px 2px rgba(0,0,0,0.2);
-  transition: all 0.1s ease;
   cursor: pointer;
 }
 
@@ -74,7 +81,8 @@ input[type=text] {
   font-family: var(--font-family-regular);
   background-color: var(--off-white);
   font-size: 16px;
-  border: 1px solid #242424;
+  border: 1px solid var(--black);
+  text-transform: uppercase;
 }
 
 select {
@@ -83,7 +91,7 @@ select {
   font-family: var(--font-family-regular);
   font-size: 16px;
   background-color: var(--off-white);
-  border: 1px solid #242424;
+  border: 1px solid var(--border);
 }
 
 input[type=text]:focus {
@@ -94,32 +102,39 @@ hr {
   border: none;
   height: 2px;
   background-color: var(--black);
-  /* transform: rotate(-0.5deg); */
   width: 100%;
   margin: 10px auto;
 }
 
 .secondaryButton {
   background-color: transparent;
-  color: #2C2C2C;
-  border: 1px dashed #8B7F6E;
-  font-family: 'Courier New', monospace;
+  color: var(--black);
+  border: 1px dashed var(--black);
   font-size: 16px;
   padding: 6px 14px;
   border-radius: 0px;
-  text-transform: none;
+  text-transform: uppercase;
+}
+
+.secondaryButton.edit {
+  margin-top: 12px;
+}
+
+.secondaryButton.add {
+  margin-bottom: 12px;
 }
 
 .secondaryButton:hover {
   background-color: rgba(0,0,0,0.05);
   border-style: solid;
-  border-color: #2C2C2C;
+  border-color: var(--black);
 }
 
 .deleteButton {
-  border-color: #EE4B2B;
+  border-color: var(--warningRed);
+  transform: rotate(-2deg);
 }
 
 .deleteButton:hover {
-  border-color: #EE4B2B;
+  border-color: var(--warningRed);
 }

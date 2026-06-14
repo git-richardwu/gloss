@@ -21,7 +21,7 @@ const ChapterExpandable = ({ chapter, work_id, onEdit }: ChapterExpandableProps)
                 <span>{chapter.chapter_name}</span>
                 {isExpanded ? <span>▲</span> : <span>▼</span>}
             </h2>
-            {isExpanded && <button className="secondaryButton" onClick={onEdit}>edit chapter</button>}
+            {isExpanded && <button className="secondaryButton edit" onClick={onEdit}>edit chapter</button>}
 
             <div className={`${styles.contentWrapper} ${isExpanded ? styles.expanded : ''}`}>
                 <div className={styles.contentInner}>

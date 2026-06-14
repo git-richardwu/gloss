@@ -1,7 +1,7 @@
 .parentContainer {
-    margin: 42px auto;
+    margin: 24px auto;
     border: 5px dashed var(--black);
-    padding: 10px;
+    padding: 24px;
     position: relative;
 }
 
@@ -13,13 +13,13 @@
   padding: 2px 25px;
   font-size: 18px;
   border: 5px solid var(--black);
-  border-bottom: 9px solid var(--black);
+  border-bottom: 8px solid var(--black);
   background-color: var(--manila);
   font-family: var(--font-family-header);
 }
 
 .editButton {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .row {
@@ -32,21 +32,21 @@
 .chapterInput {
     width: 85%;
     background-color: white;
-    padding: 10px;
+    padding: 12px;
     font-size: 24px;
     font-family: var(--font-family-header);
     color: var(--black);
-    margin: 10px auto;
+    margin: 12px auto;
     border: 5px double var(--black);
 }
 
 .nameInput {
     width: 100%;
     background-color: white;
-    padding: 10px;
+    padding: 12px;
     font-size: 24px;
     font-family: var(--font-family-header);
-    margin: 10px auto;
+    margin: 12px auto;
     color: var(--black);
     border: 3px solid var(--black);
     float: left;
@@ -55,6 +55,7 @@
 textarea {
     border: 1px solid var(--black);
     font-family: var(--font-family-regular);
+    min-height: 250px;
     flex: 1
 }
 
@@ -66,7 +67,7 @@ textarea {
 }
 
 input[type="checkbox"] {
-    accent-color: var(--highlightOrange);
+    accent-color: var(--highlightBlue);
     width: 20px;
     height: 20px;
     margin-right: 10px;

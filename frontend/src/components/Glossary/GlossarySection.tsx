@@ -86,8 +86,8 @@ const GlossarySection = ({ glossary, work_id, onSaveAll, chapterOps, characterOp
     }
 
     return (
-        <div className={styles.parent}><h1>Community Glossary</h1>
-            <button className="secondaryButton" onClick={handleAddChapter}>add chapter</button>
+        <div className={styles.parent}>
+            <button className="secondaryButton add" onClick={handleAddChapter}>add chapter</button>
             {isDirty && (
                 <button
                     onClick={handleSaveAll}

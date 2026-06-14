@@ -235,7 +235,7 @@ const EditChapter = ({ chapter, work_id, onCancel, onDelete, chapterOps, charact
                             ))
                         }
                         <div className={styles.row}>
-                            <button type="button" className="secondaryButton" onClick={handleAddCharacter}>add character</button>
+                            <button type="button" className="secondaryButton edit" onClick={handleAddCharacter}>add character</button>
                         </div>
 
                     </div>

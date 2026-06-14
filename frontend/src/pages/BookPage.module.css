@@ -8,7 +8,6 @@
      width: 20%;
      display: flex;
      flex-direction: column;
-     padding: 12px;
      box-sizing: border-box;
      align-items: center;
 
@@ -18,9 +17,16 @@
      width: 80%;
      display: flex;
      flex-direction: column;
-     padding: 12px;
      box-sizing: border-box;
      align-items: center;
+}
+
+.poster_container {
+     position: relative;
+     width: 100%;
+     max-width: 300px;
+     margin-top: 24px;
+     margin-bottom: 12px;
 }
 
 .image {
@@ -28,6 +34,49 @@
      max-width: 300px;
      height: auto;
      margin-bottom: 12px;
+     border: 9px solid white;
+     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+     background: white;
+     display: block;
+}
+
+.postit {
+     position: absolute;
+     padding: 6px 12px 8px;
+     border: 1px solid var(--black);
+     z-index: 10;
+     font-family: var(--font-family-header);
+     max-width: 45%;
+     word-wrap: break-word;
+}
+
+.postit_year {
+     background: var(--highlightPink);
+     bottom: -3%;
+     left: -5%;
+     transform: rotate(-3deg);
+}
+
+.postit_author {
+     background:  var(--highlightGreen);
+     top: -5%;
+     right: 30%;
+     transform: rotate(5deg);
+}
+
+.postit_text {
+     font-size: 16px;
+     font-weight: bold;
+     color: white;
+     line-height: 1;
+     display: block;
+     transform: rotate(1deg);
+}
+
+.bookTitle {
+  font-family: var(--font-family-header);
+  line-height: 1.25;
+  margin: 12px 0;
 }
 
 .description {
@@ -43,18 +92,19 @@
 }
 
 @media (max-width: 768px) {
-    .container {
+     .container {
           flex-direction: column;
-    }
-    
-    .left, .right {
+     }
+
+     .left,
+     .right {
           width: 100%;
           padding: 8px;
-    }
+     }
 
-    .description {
+     .description {
           max-height: 300px;
           font-size: 14px;
           margin: 8px 0;
-    }
+     }
 }

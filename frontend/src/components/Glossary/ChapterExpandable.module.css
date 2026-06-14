@@ -1,23 +1,12 @@
 .parent {
-    margin: 12px;
+  margin: 12px;
 }
-
-/* .contentWrapper {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
-  opacity: 0;
-}
-
-.contentWrapper.expanded {
-  max-height: 1000px;
-  opacity: 1;
-} */
 
 .contentWrapper {
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows 0.3s ease-out;
+  margin-top: 24px;
 }
 
 .contentWrapper.expanded {
@@ -29,26 +18,25 @@
 }
 
 .chapter {
-    position: relative;
-    padding: 20px 24px;
-    background-color: var(--manila);
-    color: var(--black);
-    display: flex;
-    justify-content: space-between;
-    cursor: pointer;
-    border: 1px solid #c9c1a9;
-    margin: 10px auto;
-    transform: rotate(-0.2deg);
-    box-shadow: 
-    0 1px 0 rgba(0,0,0,0.05),
-    0 0 0 0.5px rgba(0,0,0,0.03);
+  position: relative;
+  padding: 20px 24px;
+  background-color: var(--manila);
+  color: var(--black);
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  border: 1px solid var(--black);
+  margin: 12px auto;
+  transform: rotate(-0.2deg);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.05),
+    0 0 0 0.5px rgba(0, 0, 0, 0.03);
 }
 
 .chapter.open,
-.chapter.open::before
-{
+.chapter.open::before {
   background-color: #d8c89a;
-  box-shadow: 0 4px 0 rgba(0,0,0,0.08);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 
 }
@@ -60,41 +48,39 @@
   left: 16px;
   background-color: var(--manila);
   color: var(--black);
-  padding: 5px 25px;
+  padding: 4px 18px;
   font-size: 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--black);
   border-bottom: none;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
-}
-
-.edit {
-    margin-top: 12px;
+  font-family: var(--font-family-regular);
 }
 
 .content {
-    margin: 12px;
-    overflow: auto;
+  margin: 12px;
+  overflow: auto;
 }
 
 .name {
-    font-size: 24px;
-    background-color: var(--highlightYellow);
-    padding: 4px 6px 8px ;
-    margin-right: 6px;
-    float: left;
+  font-size: 24px;
+  padding: 4px 6px 8px;
+  margin-right: 6px;
+  float: left;
 }
 
 .centralName {
-    font-size: 24px;
-    background-color: var(--highlightOrange);
-    padding: 4px 6px 8px ;
-    margin-right: 6px;
-    float: left;
+  font-size: 24px;
+  background-color: var(--highlightBlue);
+  color: white;
+  padding: 4px 6px 8px;
+  margin-top: 6px;
+  margin-right: 10px;
+  float: left;
 }
 
 .description {
-    font-size: 20px;
-    margin: 2px 3px;
-    text-align: left;
+  font-size: 18px;
+  margin: 6px 3px;
+  text-align: left;
 }
