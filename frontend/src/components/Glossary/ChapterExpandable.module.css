@@ -6,15 +6,51 @@
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows 0.3s ease-out;
-  margin-top: 24px;
+  margin-top: 12px;
 }
 
 .contentWrapper.expanded {
   grid-template-rows: 1fr;
 }
 
+.divider {
+  opacity: 0;
+  transform: scaleX(0);
+  transition: opacity 0.2s ease-out, transform 0.3s ease-out;
+  transform-origin: left;
+  margin: 8px 0;
+}
+
+.contentWrapper.expanded .divider {
+  opacity: 1;
+  transform: scaleX(1);
+  transition: opacity 0.3s ease-out 0.1s, transform 0.3s ease-out 0.1s;
+}
+
+.contentWrapper.expanded .content {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease-out 0.15s, transform 0.3s ease-out 0.15s;
+}
+
+.editButtonWrapper {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: max-height 0.3s ease-out, opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+.editButtonWrapper.editVisible {
+  max-height: 50px;
+  opacity: 1;
+  transform: translateY(0);
+  transition: max-height 0.4s ease-out, opacity 0.3s ease-out 0.1s, transform 0.3s ease-out 0.1s;
+}
+
 .contentInner {
   overflow: hidden;
+  min-height: 0;
 }
 
 .chapter {
@@ -28,15 +64,26 @@
   border: 1px solid var(--black);
   margin: 12px auto;
   transform: rotate(-0.2deg);
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
   box-shadow:
     0 1px 0 rgba(0, 0, 0, 0.05),
     0 0 0 0.5px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  user-select: none;
+}
+
+.chapter:hover {
+  transform: rotate(-0.2deg) translateY(-1px);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    0 0 0 0.5px rgba(0, 0, 0, 0.05);
 }
 
 .chapter.open,
 .chapter.open::before {
-  background-color: #d8c89a;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.08);
+  color: var(--highlightBlue);
+  background-color: #E7DFC6;
   transform: translateY(-1px);
 
 }
@@ -55,11 +102,15 @@
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
   font-family: var(--font-family-regular);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .content {
   margin: 12px;
   overflow: auto;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.25s ease-out 0.15s, transform 0.25s ease-out 0.15s;
 }
 
 .name {
@@ -76,11 +127,23 @@
   padding: 4px 6px 8px;
   margin-top: 6px;
   margin-right: 10px;
+  transform: rotate(-1deg);
   float: left;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .description {
   font-size: 18px;
   margin: 6px 3px;
   text-align: left;
+}
+
+.toggleIcon {
+  font-size: 20px;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+.chapter.open .toggleIcon {
+  transform: rotate(180deg);
 }
