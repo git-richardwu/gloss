@@ -100,7 +100,7 @@ input[type=text]:focus {
 
 hr {
   border: none;
-  height: 2px;
+  height: 1px;
   background-color: var(--black);
   width: 100%;
   margin: 10px auto;
@@ -112,7 +112,6 @@ hr {
   border: 1px dashed var(--black);
   font-size: 16px;
   padding: 6px 14px;
-  border-radius: 0px;
   text-transform: uppercase;
 }
 

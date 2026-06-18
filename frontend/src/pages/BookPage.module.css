@@ -55,6 +55,7 @@
      bottom: -3%;
      left: -5%;
      transform: rotate(-3deg);
+     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .postit_author {
@@ -62,6 +63,7 @@
      top: -5%;
      right: 30%;
      transform: rotate(5deg);
+     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .postit_text {
