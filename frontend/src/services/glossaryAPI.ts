@@ -1,11 +1,11 @@
 import axios from 'axios';
 import type { GlossaryUpdateResponse, Chapter, Character } from '../types';
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export const glossaryAPI = {
     updateCommunityGlossary: async (updatedGlossary: Chapter[], workID: string, versionNumber: number): Promise<GlossaryUpdateResponse> => {
-        const response = await axios.put(`${API_BASE_URL}/books/${workID}/glossary`, { userInputGlossaryContent: updatedGlossary, version: versionNumber });
+        const response = await axios.put(`${API_BASE_URL}/api/books/${workID}/glossary`, { userInputGlossaryContent: updatedGlossary, version: versionNumber });
         console.log(response)
         return {
             success: true,
@@ -17,7 +17,7 @@ export const glossaryAPI = {
     resolveConflicts: async (workID: string, ourGlossary: Chapter[], resolutions: Chapter[]) => {
         console.log("BEGIN RESOLUTION")
         console.log(resolutions)
-        const response = await axios.post(`${API_BASE_URL}/books/${workID}/glossary/resolve-conflicts`,
+        const response = await axios.post(`${API_BASE_URL}/api/books/${workID}/glossary/resolve-conflicts`,
             {
                 ourGlossary: ourGlossary,
                 resolutions: resolutions

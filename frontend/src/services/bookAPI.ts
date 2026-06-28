@@ -1,11 +1,11 @@
 import axios from 'axios';
 import type { BookPageResponse, BookReponse } from '../types';
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export const bookAPI = {
     searchAndSaveBooks: async (q: string, limit: number): Promise<BookReponse> => {
-        const response = await axios.get(`${API_BASE_URL}/books/search`, { params: { q, limit } })
+        const response = await axios.get(`${API_BASE_URL}/api/books/search`, { params: { q, limit } })
         console.log(response)
         return {
             success: true,
@@ -13,7 +13,7 @@ export const bookAPI = {
         }
     },
     fetchBookPageAndLoadIfNeeded: async (workID: string): Promise<BookPageResponse> => {
-        const response = await axios.get(`${API_BASE_URL}/books/${workID}`);
+        const response = await axios.get(`${API_BASE_URL}/api/books/${workID}`);
         console.log(response)
         return {
             success: true,

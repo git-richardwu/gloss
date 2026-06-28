@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 async function testResponse() {
   try {
     console.log('Testing API endpoint...\n');
     
-    const response = await axios.get(`${API_BASE_URL}/books/search`, {
+    const response = await axios.get(`${API_BASE_URL}/api/books/search`, {
       params: { q: 'harry potter', limit: 3 }
     });
     
