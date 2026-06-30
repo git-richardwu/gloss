@@ -23,12 +23,14 @@ const cors = require('cors');
 const bookRoutes = require('./routes/bookRoutes');
 const glossaryRoutes = require('./routes/glossaryRoutes')
 
+const test = require('./services/test');
+
 const app = express();
 const http = require('http');
 const port = 3000;
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: process.env.FRONTEND_URL || 'http://localhost:9000',
   credentials: true
 }));
 
