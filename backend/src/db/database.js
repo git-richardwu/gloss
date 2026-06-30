@@ -1,16 +1,24 @@
 const { Pool } = require('pg');
 
-const pool = new Pool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    port: process.env.DB_PORT,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    max: 10,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
-    allowExitOnIdle: false,
-})
+const baseConfig = {
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+  allowExitOnIdle: false,
+}
+
+const pool = new Pool(
+  process.env.NODE_ENV === 'production'
+    ? { connectionString: process.env.DATABASE_URL, ...baseConfig }
+    : {
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        port: process.env.DB_PORT,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME,
+        ...baseConfig,
+      }
+)
 
 pool.connect((err, client, release) => {
     if (err) {
