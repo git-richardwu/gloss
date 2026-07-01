@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS community_glossaries (
     glossary_id SERIAL PRIMARY KEY,
     work_id VARCHAR(20) NOT NULL UNIQUE,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    version_number INTEGER DEFAULT 1
+    version_number INTEGER DEFAULT 1,
     CONSTRAINT fk_communityGlossaries_book
         FOREIGN KEY (work_id)
         REFERENCES books(work_id) ON DELETE CASCADE
