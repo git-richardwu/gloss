@@ -1,6 +1,6 @@
 require('dotenv').config()
 const db = require('./db/database');
-//const initDB = require('./db/initializeDB');
+const initialDB = require('./db/initializeDB');
 const BookModel = require('./models/bookModel');
 const GlossaryModel = require('./models/glossaryModel');
 const BookService = require('./services/bookDBService');
@@ -41,12 +41,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/books', bookRoutes(bookController));
 app.use('/api/books', glossaryRoutes(glossaryController));
 
-const testing = require('./services/test')
+// const testing = require('./services/test')
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+  res.send('Hello World!')
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+async function start() {
+  await initialDB();
+  app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+  })
+}
+
+start();
