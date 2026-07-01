@@ -6,6 +6,7 @@ services:
     environment:
       - NODE_ENV=production
       - FRONTEND_URL=${FRONTEND_URL}
+      - DATABASE_URL=${DATABASE_URL}
     restart: unless-stopped
 
   frontend:
