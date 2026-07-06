@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { Book } from '../../types'
 import styles from './SearchBar.module.css'
+import BookCover from './BookCover'
 
 interface SearchResultsProps {
     books: Book[]
@@ -16,7 +17,10 @@ const SearchResults = ({ books }: SearchResultsProps) => {
                             <li key={book.work_id} className={styles.search_result_item}>
                                 <Link className={styles.textDecoration} to={`/book/${book.work_id}`}>
                                     <div className={styles.cover_wrapper}>
-                                        <img className={styles.image} src={`${book.cover_url}M.jpg`} alt={book.title} />
+                                        <div style={{width: "130px", height: "193px"}}>
+                                        {/* <img className={styles.image} src={`${book.cover_url}M.jpg`} alt={book.title} /> */}
+                                            <BookCover url={book.cover_url} title={book.title} />
+                                        </div>
                                         <div className={styles.cover_tape_right}></div>
                                     </div>
                                     <div className={styles.details}>

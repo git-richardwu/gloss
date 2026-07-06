@@ -49,13 +49,12 @@
     transition: rotate 0.3s ease, filter 0.3s ease;
 }
 
-.image {
-    display: block;
-    height: auto;
-    width: 130px;
-    border: 3px solid white;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
-    background: var(--off-white);
+.loading {
+  opacity: 0;
+}
+
+.loaded {
+  opacity: 1;
 }
 
 .cover_wrapper::after {
@@ -133,4 +132,75 @@
 
 .search_result_item:nth-child(even) .cover_wrapper {
     rotate: 3deg;
+}
+
+.bookCoverWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.image {
+    display: block;
+    /* height: auto;
+    width: 130px; */
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border: 3px solid white;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+    background: var(--off-white);
+    transition: opacity 0.4s ease;
+}
+
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gray);
+  padding: 24px 0;
+}
+
+.loadingSvg {
+  width: 100px;
+  height: 100px;
+}
+
+.loadingPath {
+  stroke-dasharray: 125;
+  stroke-dashoffset: 125;
+  animation: loadingScribble 1.8s linear infinite;
+}
+
+@keyframes loadingScribble {
+  0% {
+    stroke-dashoffset: 125;
+  }
+  50% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -125;
+  }
+}
+
+.noCover {
+  width: 100%;
+  height: 100%;
+  background-color: var(--gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.noCoverText {
+  font-size: 18px;
+  font-size: var(--font-family-regular);
+  color: var(--black);
 }

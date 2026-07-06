@@ -9,6 +9,7 @@ import { glossaryAPI } from "../services/glossaryAPI";
 // import { findChapterConflicts } from "../services/findChapterConflicts";
 import { useNavigate } from "react-router-dom";
 import axios, { AxiosError } from "axios";
+import BookCover from "../components/Search/BookCover";
 
 interface ConflictState {
     conflicts: ConflictAnalysis;
@@ -258,7 +259,8 @@ const BookPage = () => {
                     <button onClick={() => navigate('/')}>back to search</button>
                     <h1 className={styles.bookTitle}>{book?.title}</h1>
                     <div className={styles.poster_container}>
-                        <img className={styles.image} src={`${book?.cover_url}M.jpg`} />
+                        <BookCover url={book?.cover_url} title={book?.title}/>
+                        {/* <img className={styles.image} src={`${book?.cover_url}M.jpg`} /> */}
                         <div className={`${styles.postit} ${styles.postit_author}`}>
                             <span className={styles.postit_text}>{book?.author}</span>
                         </div>

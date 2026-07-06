@@ -19,9 +19,7 @@ const SearchBar = () => {
         setLoading(true);
         setError(null);
         try {
-            console.log(query)
             const response = await bookAPI.searchAndSaveBooks(query, limit);
-            console.log(response)
             if (response.success) {
                 setResults(response.books)
             } else {
