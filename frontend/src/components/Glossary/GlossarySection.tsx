@@ -24,9 +24,10 @@ interface GlossaryProps {
     chapterOps: ChapterOperations;
     characterOps: CharacterOperations;
     onSaveAll: () => Promise<void>;
+    onCancelEdits: () => Promise<void>;
     isDirty: boolean;
 }
-const GlossarySection = ({ glossary, work_id, onSaveAll, chapterOps, characterOps, isDirty }: GlossaryProps) => {
+const GlossarySection = ({ glossary, work_id, onSaveAll, onCancelEdits, chapterOps, characterOps, isDirty }: GlossaryProps) => {
     const [editingChapterIndex, setEditingChapterIndex] = useState<number | null>(null);
     const [saving, setSaving] = useState<boolean>(false);
     const [signalNew, setSignalNew] = useState<boolean>(false)
@@ -76,6 +77,12 @@ const GlossarySection = ({ glossary, work_id, onSaveAll, chapterOps, characterOp
         }
     }
 
+    const handleCancelEdits = async () => {
+        await onCancelEdits();
+        setEditingChapterIndex(null);
+        setSignalNew(false)
+    }
+
     if (saving) {
         return (
             <div className={styles.loading}>
@@ -89,12 +96,20 @@ const GlossarySection = ({ glossary, work_id, onSaveAll, chapterOps, characterOp
         <div className={styles.parent}>
             <button className="secondaryButton add" onClick={handleAddChapter}>add chapter</button>
             {isDirty && (
+                <div>
                 <button
                     onClick={handleSaveAll}
                     className={styles.saveButton}
                 >
                     save all changes
                 </button>
+                <button
+                    onClick={handleCancelEdits}
+                    className={styles.saveButton}
+                >
+                    cancel all changes
+                </button>
+                </div>
             )}
             {/* <button onClick={() => setLoading(true)}>test loading</button> */}
 

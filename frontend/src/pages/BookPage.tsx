@@ -31,6 +31,7 @@ const BookPage = () => {
     const [conflictStatus, setConflictStatus] = useState<boolean>(false);
     const [conflictState, setConflictState] = useState<ConflictState | null>(null);
     const [isDirty, setIsDirty] = useState<boolean>(false);
+    const [originGlossary, setOriginGlossary] = useState<Chapter[]>(empty_glossary);
     // const [updateTime, setUpdateTime] = useState<string | null>(null);
 
     const navigate = useNavigate();
@@ -49,8 +50,10 @@ const BookPage = () => {
                     setBook(response.openLibraryDetails)
                     if (response.glossary_chapters === null) {
                         setGlossary([])
+                        setOriginGlossary([])
                     } else {
                         setGlossary(response.glossary_chapters)
+                        setOriginGlossary(response.glossary_chapters)
                     }
                     setGlossaryVersion(response.versionNum)
                     // setUpdateTime(response.glossary.updated_at)
@@ -84,6 +87,7 @@ const BookPage = () => {
             const response = await glossaryAPI.updateCommunityGlossary(resolutions, work_id, conflictState.databaseVersion);
             setGlossary(response.glossary_chapters);
             setGlossaryVersion(response.version);
+            setOriginGlossary(response.glossary_chapters)
             setIsDirty(false);
             setConflictStatus(false);
         } catch (error) {
@@ -197,6 +201,7 @@ const BookPage = () => {
             console.log('Update success!');
             setGlossary(response.glossary_chapters);
             setGlossaryVersion(response.version);
+            setOriginGlossary(response.glossary_chapters)
             setIsDirty(false);
 
         } catch (err) {
@@ -226,6 +231,14 @@ const BookPage = () => {
                 console.error('Error saving:', err);
             }
         }
+    }
+
+    const handleCancelEdits = async () => {
+        if (!confirm('Canceling all your changes will delete your current edits. Continue?')) {
+            return;
+        }
+        setGlossary(originGlossary);
+        setIsDirty(false);
     }
 
     if (loading) {
@@ -259,7 +272,7 @@ const BookPage = () => {
                     <button onClick={() => navigate('/')}>back to search</button>
                     <h1 className={styles.bookTitle}>{book?.title}</h1>
                     <div className={styles.poster_container}>
-                        <BookCover url={book?.cover_url} title={book?.title}/>
+                        <BookCover url={book?.cover_url} title={book?.title} />
                         {/* <img className={styles.image} src={`${book?.cover_url}M.jpg`} /> */}
                         <div className={`${styles.postit} ${styles.postit_author}`}>
                             <span className={styles.postit_text}>{book?.author}</span>
@@ -278,7 +291,7 @@ const BookPage = () => {
                         databaseVersion={conflictState.databaseVersion}
                         onResolve={handleConflictResolve}
                         onCancel={() => setConflictStatus(false)} /> :
-                        <GlossarySection glossary={glossary} work_id={work_id} onSaveAll={handleSaveAll} chapterOps={chapterOps} characterOps={characterOps} isDirty={isDirty} />}
+                        <GlossarySection glossary={glossary} work_id={work_id} onSaveAll={handleSaveAll} onCancelEdits={handleCancelEdits} chapterOps={chapterOps} characterOps={characterOps} isDirty={isDirty} />}
                     {/* <GlossarySection glossary={glossary} work_id={work_id} onGlossaryChange={setGlossary} onSaveChapter={handleSaveChapter} onDeleteChapter={handleDeleteChapter}/>} */}
                 </div>
             </div>
