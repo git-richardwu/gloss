@@ -32,12 +32,16 @@
 .chapterInput {
     width: 85%;
     background-color: white;
-    padding: 12px;
+    padding: 14px 18px;
     font-size: 24px;
     font-family: var(--font-family-header);
     color: var(--black);
     margin: 12px auto;
-    border: 5px double var(--black);
+    border: 2px solid var(--black);
+    outline: none;
+    letter-spacing: 2px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    border-top: 3px dashed var(--black);
 }
 
 .nameInput {
@@ -48,13 +52,15 @@
     font-family: var(--font-family-header);
     margin: 12px auto;
     color: var(--black);
-    border: 3px solid var(--black);
+    letter-spacing: 2px;
+    border: 2px solid var(--black);
     float: left;
 }
 
 textarea {
     border: 1px solid var(--black);
     font-family: var(--font-family-regular);
+    letter-spacing: 2px;
     min-height: 250px;
     flex: 1
 }
