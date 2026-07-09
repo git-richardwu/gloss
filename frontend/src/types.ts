@@ -19,11 +19,19 @@ export interface BookDetails {
     year_published: number;
 }
 
+export interface Versions {
+    version_number: number,
+    created_at: string,
+    chapter_count: number,
+    is_current?: boolean
+}
+
 export interface BookPageResponse {
     success: boolean;
     openLibraryDetails: BookDetails;
     glossary_chapters: Chapter[];
     versionNum: number;
+    version_history: Versions[]
 }
 
 export interface GlossaryUpdateResponse {

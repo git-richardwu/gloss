@@ -29,8 +29,10 @@ class GlossaryModel {
             UPDATE community_glossaries 
             SET version_number = version_number + 1
             WHERE work_id = $1
+            RETURNING version_number
         `;
-        await client.query(query, [work_id]);
+        const newVersion = await client.query(query, [work_id]);
+        return newVersion.rows[0].version_number
     }
 
     async addCommunityGlossary(work_id, client = this.db) {
@@ -129,6 +131,56 @@ class GlossaryModel {
     `;
         const res = await client.query(query, [work_id]);
         return res.rows[0]?.data || null;
+    }
+
+    async createSnapshot(work_id, client = this.db) {
+        if (!client) {
+            throw new DatabaseConnectionError();
+        }
+        const currentData = await this.fetchChaptersAndCharacters(work_id, client);
+        // console.log(currentData)
+        if (!currentData) {
+            throw new Error(`No glossary found for work_id: ${work_id}`);
+        }
+        const newVersionNumber = await this.incrementVersion(work_id)
+        // console.log(newVersionNumber)
+
+        const query = `INSERT INTO version_history (work_id, version_number, snapshot_data)
+        VALUES ($1, $2, $3)
+        RETURNING version_id, version_number, created_at`;
+        const res = await client.query(query, [work_id, newVersionNumber, currentData])
+        return {
+            version_id: res.rows[0].version_id,
+            version_number: res.rows[0].version_number,
+            created_at: res.rows[0].created_at,
+            snapshot_data: currentData
+        }
+    }
+
+    async getVersionHistoryList(work_id, client = this.db) {
+        if (!client) {
+            throw new DatabaseConnectionError();
+        }
+        const query = `SELECT version_number, created_at, jsonb_array_length(snapshot_data->'glossary_chapters') as chapter_count
+        FROM version_history
+        WHERE work_id = $1
+        ORDER BY version_number DESC`; 
+        const res = await client.query(query, [work_id])
+        if (res.rows.length > 0) {
+            res.rows[0].is_current = true
+        }
+        return res.rows;
+    }
+
+    async getVersionData(work_id, version_number, client = this.db) {
+        if (!client) {
+            throw new DatabaseConnectionError();
+        }
+        const query = `SELECT snapshot_data
+        FROM version_history
+        WHERE work_id = $1 AND version_number = $2`; 
+        const res = await client.query(query, [work_id, version_number])
+        return res.rows[0];
     }
 
     async fetchChapters(work_id, client = this.db) { // works

@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, version } from "react";
 import { bookAPI } from "../services/bookAPI"
-import type { BookDetails, Chapter, ConflictingData, Character, ConflictAnalysis } from '../types'
+import type { BookDetails, Chapter, ConflictingData, Character, ConflictAnalysis, Versions } from '../types'
 import styles from './BookPage.module.css'
 import GlossarySection from "../components/Glossary/GlossarySection";
 import ConflictResolveSection from "../components/Glossary/ConflictResolve";
@@ -10,6 +10,8 @@ import { glossaryAPI } from "../services/glossaryAPI";
 import { useNavigate } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 import BookCover from "../components/Search/BookCover";
+import VersionHistory from "../components/Glossary/VersionHistory";
+import type { Version } from "sass";
 
 interface ConflictState {
     conflicts: ConflictAnalysis;
@@ -20,11 +22,16 @@ interface ConflictState {
 
 type GlossaryUpdateError = AxiosError<ConflictState>;
 
+type ViewMode = "current" | "history";
+
 const BookPage = () => {
     const empty_glossary: Chapter[] = [];
+    const empty_versionHistory: Versions[] = [];
+    const [viewMode, setViewMode] = useState<ViewMode>('current');
     const [loading, setLoading] = useState<boolean>(true);
     const [book, setBook] = useState<BookDetails | null>(null);
     const [glossary, setGlossary] = useState<Chapter[]>(empty_glossary);
+    const [versionHistory, setVersionHistory] = useState<Versions[]>(empty_versionHistory);
     const [glossaryVersion, setGlossaryVersion] = useState<number>(1);
     const { work_id } = useParams<{ work_id: string }>();
     const [error, setError] = useState<string | null>(null);
@@ -32,6 +39,7 @@ const BookPage = () => {
     const [conflictState, setConflictState] = useState<ConflictState | null>(null);
     const [isDirty, setIsDirty] = useState<boolean>(false);
     const [originGlossary, setOriginGlossary] = useState<Chapter[]>(empty_glossary);
+    const [selectedVersion, setSelectedVersion] = useState<number | null>(null);
     // const [updateTime, setUpdateTime] = useState<string | null>(null);
 
     const navigate = useNavigate();
@@ -56,6 +64,7 @@ const BookPage = () => {
                         setOriginGlossary(response.glossary_chapters)
                     }
                     setGlossaryVersion(response.versionNum)
+                    setVersionHistory(response.version_history)
                     // setUpdateTime(response.glossary.updated_at)
                 } else {
                     setError('Failed to get book detail')
@@ -233,12 +242,47 @@ const BookPage = () => {
         }
     }
 
+    const handleLoadVersion = async (versionNum: number) => {
+        if (!work_id) {
+            return;
+        }
+        try {
+            setLoading(true)
+            const response = await glossaryAPI.getVersion(work_id, versionNum);
+            if (response.success) {
+                setGlossary(response.snapshot_data.glossary_chapters);
+            }
+        } catch (error) {
+            setError('Failed to load version')
+        } finally {
+            setLoading(false)
+        }
+
+    }
+
     const handleCancelEdits = async () => {
         if (!confirm('Canceling all your changes will delete your current edits. Continue?')) {
             return;
         }
         setGlossary(originGlossary);
         setIsDirty(false);
+    }
+
+    const handleVersionSelect = async (version_number: number) => {
+        if (version_number === glossaryVersion) {
+            setViewMode('current');
+        } else {
+            setViewMode('history');
+        }
+        setSelectedVersion(version_number);
+        try {
+            setLoading(true)
+            await handleLoadVersion(version_number);
+        } catch (error) {
+            console.error('Failed to load version:', error);
+        } finally {
+            setLoading(false)
+        }
     }
 
     if (loading) {
@@ -284,14 +328,15 @@ const BookPage = () => {
                     <p className={styles.description}>{book?.descript}</p>
                 </div>
                 <div className={styles.right}>
-                    <h3>Ver. {glossaryVersion}</h3>
+                    <VersionHistory version_history={versionHistory} selectedVersion={selectedVersion}
+                        onVersionSelect={handleVersionSelect} isLoading={loading}/>
                     {conflictStatus && conflictState ? <ConflictResolveSection conflicts={conflictState.conflicts}
                         ourGlossary={conflictState.ourGlossary}
                         theirGlossary={conflictState.currentGlossary}
                         databaseVersion={conflictState.databaseVersion}
                         onResolve={handleConflictResolve}
                         onCancel={() => setConflictStatus(false)} /> :
-                        <GlossarySection glossary={glossary} work_id={work_id} onSaveAll={handleSaveAll} onCancelEdits={handleCancelEdits} chapterOps={chapterOps} characterOps={characterOps} isDirty={isDirty} />}
+                        <GlossarySection viewMode={viewMode} glossary={glossary} work_id={work_id} onSaveAll={handleSaveAll} onCancelEdits={handleCancelEdits} chapterOps={chapterOps} characterOps={characterOps} isDirty={isDirty} />}
                     {/* <GlossarySection glossary={glossary} work_id={work_id} onGlossaryChange={setGlossary} onSaveChapter={handleSaveChapter} onDeleteChapter={handleDeleteChapter}/>} */}
                 </div>
             </div>

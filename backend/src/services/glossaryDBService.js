@@ -22,6 +22,30 @@ class glossaryDBService {
         return searchDB
     }
 
+    async getVersionHistory(work_id) {
+        if (!work_id) {
+            throw new ValidationError('No work_id provided.')
+        }
+        const versionHistory = await this.glossaryModel.getVersionHistoryList(work_id)
+        return {
+            success: true,
+            version_history: versionHistory,
+            message: `${work_id}'s version history found in database`
+        }
+    }
+
+    async getVersionData(work_id, version_number) {
+        if (!work_id) {
+            throw new ValidationError('No work_id provided.')
+        }
+        const versionHistory = await this.glossaryModel.getVersionData(work_id, version_number)
+        return {
+            success: true,
+            snapshot_data: versionHistory.snapshot_data,
+            message: `${work_id}'s version history found in database`
+        }
+    }
+
     async createEmptyCommunityGlossary(work_id) {
         console.log(`📝 Creating empty community glossary for ${work_id}`)
         try {
@@ -46,7 +70,8 @@ class glossaryDBService {
     }
     async getGlossaryByWorkID(work_id) {
         console.log(`🔍 Fetching community glossary of ${work_id}`)
-        const glossary = await this.glossaryModel.fetchChaptersAndCharacters(work_id)
+        const glossary = await this.glossaryModel.fetchChaptersAndCharacters(work_id);
+        const versionHistory = await this.glossaryModel.getVersionHistoryList(work_id);
         if (!glossary) {
             return {
                 success: true,
@@ -133,7 +158,7 @@ class glossaryDBService {
                     await this.glossaryModel.deleteChapter(existingId, trx)
                 }
             }
-            await this.glossaryModel.incrementVersion(work_id, trx);
+            await this.glossaryModel.createSnapshot(work_id, trx);
             const updatedGlossary = await this.glossaryModel.fetchChaptersAndCharacters(work_id, trx);
             console.log(updatedGlossary)
             return {

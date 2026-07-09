@@ -5,6 +5,8 @@ import ChapterExpandable from './ChapterExpandable'
 import EditChapter from "./EditChapter";
 import { IoIosSave } from "react-icons/io";
 
+type ViewMode = "current" | "history";
+
 interface ChapterOperations {
     updateName: (chapterID: string, newName: string) => void;
     updatePosition: (chapterID: string, newPosition: number) => void;
@@ -19,6 +21,7 @@ interface CharacterOperations {
 }
 
 interface GlossaryProps {
+    viewMode: ViewMode
     glossary: Chapter[];
     work_id: string;
     chapterOps: ChapterOperations;
@@ -27,7 +30,7 @@ interface GlossaryProps {
     onCancelEdits: () => Promise<void>;
     isDirty: boolean;
 }
-const GlossarySection = ({ glossary, work_id, onSaveAll, onCancelEdits, chapterOps, characterOps, isDirty }: GlossaryProps) => {
+const GlossarySection = ({ viewMode, glossary, work_id, onSaveAll, onCancelEdits, chapterOps, characterOps, isDirty }: GlossaryProps) => {
     const [editingChapterIndex, setEditingChapterIndex] = useState<number | null>(null);
     const [saving, setSaving] = useState<boolean>(false);
     const [signalNew, setSignalNew] = useState<boolean>(false)
@@ -94,8 +97,8 @@ const GlossarySection = ({ glossary, work_id, onSaveAll, onCancelEdits, chapterO
 
     return (
         <div className={styles.parent}>
-            <button className="secondaryButton add" onClick={handleAddChapter}>add chapter</button>
-            {isDirty && (
+            {viewMode === "current" && (<button className="secondaryButton add" onClick={handleAddChapter}>add chapter</button>)}
+            {isDirty && viewMode === "current" && (
                 <div>
                 <button
                     onClick={handleSaveAll}
@@ -111,6 +114,7 @@ const GlossarySection = ({ glossary, work_id, onSaveAll, onCancelEdits, chapterO
                 </button>
                 </div>
             )}
+
             {/* <button onClick={() => setLoading(true)}>test loading</button> */}
 
             <div className={styles.glossarySection}>
@@ -129,6 +133,7 @@ const GlossarySection = ({ glossary, work_id, onSaveAll, onCancelEdits, chapterO
                             : (<ChapterExpandable
                                 chapter={chapter}
                                 work_id={work_id}
+                                viewMode={viewMode}
                                 onEdit={() => setEditingChapterIndex(chapterIndex)} />)}
                     </div>
                 ))}

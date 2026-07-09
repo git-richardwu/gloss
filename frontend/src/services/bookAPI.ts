@@ -19,7 +19,8 @@ export const bookAPI = {
             success: true,
             openLibraryDetails: response.data.details,
             glossary_chapters: response.data.glossary.glossary_chapters,
-            versionNum: response.data.glossary.glossary_details.version_number
+            versionNum: response.data.glossary.glossary_details.version_number,
+            version_history: response.data.version_history
         }
     },
 }

@@ -23,11 +23,13 @@ class glossaryController {
             } else if (error instanceof DuplicateError) {
                 return res.status(409).json({ error: error.message })
             } else if (error instanceof VersionConflictError) {
-                return res.status(409).json({ error: error.message,
+                return res.status(409).json({
+                    error: error.message,
                     conflicts: error.conflicts,
                     currentGlossary: error.currentGlossary,
                     ourGlossary: error.ourGlossary,
-                    databaseVersion: error.databaseVersion })
+                    databaseVersion: error.databaseVersion
+                })
             } else {
                 console.error('Unexpected search controller error: ', error)
                 return res.status(500).json({ error: 'Internal service error' })
@@ -100,6 +102,29 @@ class glossaryController {
                 success: false,
                 message: error.message || 'Internal server error'
             });
+        }
+    }
+
+    async fetchVersion(req, res) {
+        try {
+            const { id, version } = req.params;
+            const serviceRes = await this.glossaryService.getVersionData(id, version)
+            return res.status(200).json(serviceRes)
+        } catch (error) {
+            if (error instanceof DatabaseConnectionError) {
+                return res.status(503).json({ error: 'Database unavailable' })
+            } else if (error instanceof ExternalServiceError) {
+                return res.status(503).json({ error: 'Book search service unavailable' })
+            } else if (error instanceof ValidationError) {
+                return res.status(400).json({ error: error.message })
+            } else if (error instanceof NotFoundError) {
+                return res.status(404).json({ error: error.message })
+            } else if (error instanceof DuplicateError) {
+                return res.status(409).json({ error: error.message })
+            } else {
+                console.error('Unexpected search controller error: ', error)
+                return res.status(500).json({ error: 'Internal service error' })
+            }
         }
     }
 

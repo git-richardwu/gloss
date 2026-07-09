@@ -2,13 +2,16 @@ import React, { useState } from "react";
 import type { Character, Chapter } from '../../types';
 import styles from './ChapterExpandable.module.css'
 
+type ViewMode = "current" | "history";
+
 interface ChapterExpandableProps {
     chapter: Chapter;
     work_id: string;
+    viewMode: ViewMode;
     onEdit: () => void;
 }
 
-const ChapterExpandable = ({ chapter, work_id, onEdit }: ChapterExpandableProps) => {
+const ChapterExpandable = ({ chapter, work_id, viewMode, onEdit }: ChapterExpandableProps) => {
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     return (
         <div className={styles.parent}>
@@ -21,9 +24,10 @@ const ChapterExpandable = ({ chapter, work_id, onEdit }: ChapterExpandableProps)
                     {isExpanded ? '▲' : '▼'}
                 </span>
             </h2>
+            {viewMode === "current" && (
             <div className={`${styles.editButtonWrapper} ${isExpanded ? styles.editVisible : ''}`}>
                 <button className="secondaryButton edit" onClick={onEdit}>edit chapter</button>
-            </div>
+            </div>)}
 
             <div className={`${styles.contentWrapper} ${isExpanded ? styles.expanded : ''}`}>
                 <div className={styles.contentInner}>

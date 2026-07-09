@@ -57,3 +57,17 @@ CREATE TABLE IF NOT EXISTS chapter_characters (
         FOREIGN KEY (chapter_id)
         REFERENCES cg_chapters(chapter_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS version_history (
+    version_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    work_id VARCHAR(20) NOT NULL,
+    version_number INTEGER NOT NULL,
+    snapshot_data JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_version_history_book
+        FOREIGN KEY (work_id) REFERENCES books(work_id) ON DELETE CASCADE,
+    CONSTRAINT unique_work_version UNIQUE (work_id, version_number)
+);
+
+CREATE INDEX IF NOT EXISTS idx_version_history_work_id ON version_history(work_id);
+CREATE INDEX IF NOT EXISTS idx_version_history_work_version ON version_history(work_id, version_number DESC);

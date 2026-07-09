@@ -23,5 +23,12 @@ export const glossaryAPI = {
                 resolutions: resolutions
             });
         return response.data;
+    },
+    getVersion: async (workID: string, versionNum: number) => {
+        const response = await axios.get(`${API_BASE_URL}/api/books/${workID}/glossary/version/${versionNum}`)
+        return {
+            success: true,
+            snapshot_data: response.data.snapshot_data
+        }
     }
 }
