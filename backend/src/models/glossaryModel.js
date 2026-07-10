@@ -161,7 +161,7 @@ class GlossaryModel {
         if (!client) {
             throw new DatabaseConnectionError();
         }
-        const query = `SELECT version_number, created_at, jsonb_array_length(snapshot_data->'glossary_chapters') as chapter_count
+        const query = `SELECT version_number, created_at, jsonb_array_length(snapshot_data->'glossary_chapters') as chapter_count, snapshot_data
         FROM version_history
         WHERE work_id = $1
         ORDER BY version_number DESC`;

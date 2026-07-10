@@ -19,10 +19,22 @@ export interface BookDetails {
     year_published: number;
 }
 
+export interface GlossaryDetails {
+    work_id: string;
+    glossary_id: number;
+    version_number: number;
+}
+
+export interface Snapshot {
+    glossary_details: GlossaryDetails;
+    glossary_chapters: Chapter[];
+}
+
 export interface Versions {
     version_number: number,
     created_at: string,
     chapter_count: number,
+    snapshot_data: Snapshot,
     is_current?: boolean
 }
 

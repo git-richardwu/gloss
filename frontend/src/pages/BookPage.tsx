@@ -249,10 +249,16 @@ const BookPage = () => {
         }
         try {
             setLoading(true)
-            const response = await glossaryAPI.getVersion(work_id, versionNum);
-            if (response.success) {
-                setGlossary(response.snapshot_data.glossary_chapters);
+            const res = versionHistory.find(version => version.version_number === versionNum)
+            if (res) {
+                setGlossary(res.snapshot_data.glossary_chapters)
+            } else {
+                setGlossary(versionHistory[0].snapshot_data.glossary_chapters)
             }
+            // const response = await glossaryAPI.getVersion(work_id, versionNum);
+            // if (response.success) {
+            //     setGlossary(response.snapshot_data.glossary_chapters);
+            // }
         } catch (error) {
             setError('Failed to load version')
         } finally {
