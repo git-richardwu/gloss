@@ -26,12 +26,15 @@ const ChapterExpandable = ({ chapter, work_id, viewMode, onEdit }: ChapterExpand
             </h2>
             {viewMode === "current" && (
             <div className={`${styles.editButtonWrapper} ${isExpanded ? styles.editVisible : ''}`}>
+                <div className={styles.contentInner}>
                 <button className="secondaryButton edit" onClick={onEdit}>edit chapter</button>
+                <hr className={styles.divider} />
+                </div>
             </div>)}
 
             <div className={`${styles.contentWrapper} ${isExpanded ? styles.expanded : ''}`}>
                 <div className={styles.contentInner}>
-                    <hr className={styles.divider} />
+                    {/* <hr className={styles.divider} /> */}
                     {chapter.characters.map((characterData: Character, index: number) => (
                         <div key={chapter.characters[index].character_id}>
                             <div className={styles.content}>
