@@ -158,12 +158,13 @@ class glossaryDBService {
                     await this.glossaryModel.deleteChapter(existingId, trx)
                 }
             }
-            await this.glossaryModel.createSnapshot(work_id, trx);
+            await this.glossaryModel.createSnapshot(work_id, false, trx);
             const updatedGlossary = await this.glossaryModel.fetchChaptersAndCharacters(work_id, trx);
-            console.log(updatedGlossary)
+            const updatedVersionHistory = await this.glossaryModel.getVersionHistoryList(work_id, trx);
             return {
                 chapters: updatedGlossary.glossary_chapters,
                 details: updatedGlossary.glossary_details,
+                history: updatedVersionHistory,
                 message: 'Glossary updated successfully'
             };
         })

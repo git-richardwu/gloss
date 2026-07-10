@@ -58,6 +58,7 @@ class GlossaryModel {
          VALUES ($1, $2, $3, $4, $5)
          RETURNING *`
         const characterResult = await this.db.query(characterQuery, [sampleCharacterID, sampleChaptersID, "Character A", "Placeholder Text", true]);
+        await this.createSnapshot(work_id, true);
         await client.query('COMMIT');
         console.log('Community glossary created successfully!!');
         return {
@@ -133,7 +134,7 @@ class GlossaryModel {
         return res.rows[0]?.data || null;
     }
 
-    async createSnapshot(work_id, client = this.db) {
+    async createSnapshot(work_id, first_load, client = this.db) {
         if (!client) {
             throw new DatabaseConnectionError();
         }
@@ -142,13 +143,12 @@ class GlossaryModel {
         if (!currentData) {
             throw new Error(`No glossary found for work_id: ${work_id}`);
         }
-        const newVersionNumber = await this.incrementVersion(work_id)
+        const snapshot_ver = first_load ? 1 : await this.incrementVersion(work_id)
         // console.log(newVersionNumber)
-
         const query = `INSERT INTO version_history (work_id, version_number, snapshot_data)
         VALUES ($1, $2, $3)
         RETURNING version_id, version_number, created_at`;
-        const res = await client.query(query, [work_id, newVersionNumber, currentData])
+        const res = await client.query(query, [work_id, snapshot_ver, currentData])
         return {
             version_id: res.rows[0].version_id,
             version_number: res.rows[0].version_number,
@@ -164,10 +164,25 @@ class GlossaryModel {
         const query = `SELECT version_number, created_at, jsonb_array_length(snapshot_data->'glossary_chapters') as chapter_count
         FROM version_history
         WHERE work_id = $1
-        ORDER BY version_number DESC`; 
-        const res = await client.query(query, [work_id])
+        ORDER BY version_number DESC`;
+        let res = await client.query(query, [work_id])
         if (res.rows.length > 0) {
-            res.rows[0].is_current = true
+            const currentQuery = `SELECT version_number FROM community_glossaries WHERE work_id = $1`;
+            const currentRes = await client.query(currentQuery, [work_id])
+            const currentVersion = currentRes.rows[0]?.version_number;
+            res.rows = res.rows.map(version => ({
+                ...version,
+                is_current: version.version_number === currentVersion
+            }));
+        } else {
+            await this.createSnapshot(work_id, true);
+            res = await client.query(query, [work_id]);
+            if (res.rows.length > 0) {
+                res.rows = res.rows.map(version => ({
+                    ...version,
+                    is_current: true
+                }));
+            }
         }
         return res.rows;
     }
@@ -178,7 +193,7 @@ class GlossaryModel {
         }
         const query = `SELECT snapshot_data
         FROM version_history
-        WHERE work_id = $1 AND version_number = $2`; 
+        WHERE work_id = $1 AND version_number = $2`;
         const res = await client.query(query, [work_id, version_number])
         return res.rows[0];
     }

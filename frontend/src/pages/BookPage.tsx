@@ -81,14 +81,14 @@ const BookPage = () => {
         }
     }, [work_id])
 
-    useEffect(() => {
-        console.log('📝 Glossary state updated:', {
-            chapters: glossary.length,
-            totalCharacters: glossary.reduce(
-                (sum, ch) => sum + ch.characters.length, 0
-            )
-        });
-    }, [glossary]);
+    // useEffect(() => {
+    //     console.log('📝 Glossary state updated:', {
+    //         chapters: glossary.length,
+    //         totalCharacters: glossary.reduce(
+    //             (sum, ch) => sum + ch.characters.length, 0
+    //         )
+    //     });
+    // }, [glossary]);
 
     const handleConflictResolve = async (resolutions: Chapter[]) => {
         if (!work_id || !conflictState) return
@@ -210,7 +210,8 @@ const BookPage = () => {
             console.log('Update success!');
             setGlossary(response.glossary_chapters);
             setGlossaryVersion(response.version);
-            setOriginGlossary(response.glossary_chapters)
+            setOriginGlossary(response.glossary_chapters);
+            setVersionHistory(response.version_history);
             setIsDirty(false);
 
         } catch (err) {

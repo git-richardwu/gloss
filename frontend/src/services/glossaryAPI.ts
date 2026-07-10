@@ -11,6 +11,7 @@ export const glossaryAPI = {
             success: true,
             glossary_chapters: response.data.chapters,
             version: response.data.details.version_number,
+            version_history: response.data.history,
             message: response.data.message,
         }
     },

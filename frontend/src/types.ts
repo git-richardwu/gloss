@@ -38,6 +38,7 @@ export interface GlossaryUpdateResponse {
     success: boolean;
     glossary_chapters: Chapter[];
     version: number;
+    version_history: Versions[];
     message?: string;
 }
 
