@@ -31,5 +31,12 @@ export const glossaryAPI = {
             success: true,
             snapshot_data: response.data.snapshot_data
         }
+    },
+    getRecentChanges: async () => {
+        const response = await axios.get(`${API_BASE_URL}/api/books/glossary/recents`);
+        return {
+            success: true,
+            recents: response.data
+        }
     }
 }

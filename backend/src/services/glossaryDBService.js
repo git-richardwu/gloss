@@ -46,6 +46,11 @@ class glossaryDBService {
         }
     }
 
+    async getRecentlyUpdated() {
+        const listOfRecents = await this.glossaryModel.getRecentlyUpdated();
+        return listOfRecents
+    }
+
     async createEmptyCommunityGlossary(work_id) {
         console.log(`📝 Creating empty community glossary for ${work_id}`)
         try {

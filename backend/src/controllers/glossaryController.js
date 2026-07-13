@@ -128,6 +128,28 @@ class glossaryController {
         }
     }
 
+    async fetchRecents(req, res) {
+        try {
+            const serviceRes = await this.glossaryService.getRecentlyUpdated()
+            return res.status(200).json(serviceRes)
+        } catch (error) {
+            if (error instanceof DatabaseConnectionError) {
+                return res.status(503).json({ error: 'Database unavailable' })
+            } else if (error instanceof ExternalServiceError) {
+                return res.status(503).json({ error: 'Book search service unavailable' })
+            } else if (error instanceof ValidationError) {
+                return res.status(400).json({ error: error.message })
+            } else if (error instanceof NotFoundError) {
+                return res.status(404).json({ error: error.message })
+            } else if (error instanceof DuplicateError) {
+                return res.status(409).json({ error: error.message })
+            } else {
+                console.error('Unexpected search controller error: ', error)
+                return res.status(500).json({ error: 'Internal service error' })
+            }
+        }
+    }
+
 
 }
 

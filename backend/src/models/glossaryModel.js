@@ -197,6 +197,26 @@ class GlossaryModel {
         return res.rows[0];
     }
 
+    async getRecentlyUpdated(client = this.db) {
+        if (!client) {
+            throw new DatabaseConnectionError();
+        }
+        const query = `SELECT * FROM (
+        SELECT DISTINCT ON (vh.work_id) 
+            vh.version_id,
+            vh.work_id,
+            vh.version_number,
+            vh.created_at,
+            b.title
+        FROM version_history vh
+        JOIN books b ON b.work_id = vh.work_id
+        ORDER BY vh.work_id, vh.created_at DESC) AS latest_per_work
+        ORDER BY created_at DESC
+        LIMIT 3;`;
+        const res = await client.query(query)
+        return res.rows.map(({ work_id, title }) => ({ work_id, title }));
+    }
+
     async fetchChapters(work_id, client = this.db) { // works
         if (!client) {
             throw new DatabaseConnectionError();
