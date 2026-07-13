@@ -49,7 +49,7 @@ class glossaryDBService {
     async createEmptyCommunityGlossary(work_id) {
         console.log(`📝 Creating empty community glossary for ${work_id}`)
         try {
-            const emptyGlossary = await this.glossaryModel.addCommunityGlossary(work_id)
+            const emptyGlossary = await this.glossaryModel.addCommunityGlossary(work_id);
             if (!emptyGlossary) {
                 throw new NotFoundError(`Book ${work_id} not found`)
             }
@@ -71,7 +71,6 @@ class glossaryDBService {
     async getGlossaryByWorkID(work_id) {
         console.log(`🔍 Fetching community glossary of ${work_id}`)
         const glossary = await this.glossaryModel.fetchChaptersAndCharacters(work_id);
-        const versionHistory = await this.glossaryModel.getVersionHistoryList(work_id);
         if (!glossary) {
             return {
                 success: true,

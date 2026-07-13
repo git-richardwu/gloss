@@ -139,7 +139,6 @@ class GlossaryModel {
             throw new DatabaseConnectionError();
         }
         const currentData = await this.fetchChaptersAndCharacters(work_id, client);
-        // console.log(currentData)
         if (!currentData) {
             throw new Error(`No glossary found for work_id: ${work_id}`);
         }
