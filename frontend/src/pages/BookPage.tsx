@@ -96,7 +96,8 @@ const BookPage = () => {
             const response = await glossaryAPI.updateCommunityGlossary(resolutions, work_id, conflictState.databaseVersion);
             setGlossary(response.glossary_chapters);
             setGlossaryVersion(response.version);
-            setOriginGlossary(response.glossary_chapters)
+            setOriginGlossary(response.glossary_chapters);
+            setVersionHistory(response.version_history);
             setIsDirty(false);
             setConflictStatus(false);
         } catch (error) {
