@@ -220,7 +220,6 @@ const BookPage = () => {
             const error = err as GlossaryUpdateError;
             if (error.response?.status === 409) {
                 // const { currentGlossary, databaseVersion }: { currentGlossary: GlossaryData, databaseVersion: number } = err.response.data
-                console.log("REACHED HERE AT 205")
                 console.log(error.response.data)
                 const { conflicts, currentGlossary, ourGlossary, databaseVersion }: ConflictState = error.response.data;
                 if (error.response?.status === 409) {
