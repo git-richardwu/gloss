@@ -23,8 +23,6 @@ const cors = require('cors');
 const bookRoutes = require('./routes/bookRoutes');
 const glossaryRoutes = require('./routes/glossaryRoutes')
 
-const test = require('./services/test');
-
 const app = express();
 const http = require('http');
 const port = 3000;
