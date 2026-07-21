@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   server: {
     allowedHosts: [
-      'gloss-frontend-production.up.railway.app'
+      'arqs.up.railway.app'
     ]
   },
   plugins: [
