@@ -121,7 +121,10 @@
 .name {
   font-size: 24px;
   padding: 4px 6px 8px;
-  margin-right: 6px;
+  border: 1px solid var(--black);
+  margin-top: 6px;
+  margin-right: 10px;
+  transform: rotate(-1deg);
   float: left;
 }
 
